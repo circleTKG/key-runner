@@ -6,7 +6,8 @@ export function createKeyboardState(target = document) {
         'KeyD',
         'ArrowUp',
         'ArrowLeft',
-        'ArrowRight'
+        'ArrowRight',
+        'Escape'
     ]);
 
     target.addEventListener('keydown', (event) => {
@@ -37,5 +38,4 @@ export function createKeyboardState(target = document) {
         }
     });
 
-    return keys;
-}
+    return keys;}

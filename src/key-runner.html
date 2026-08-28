@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Key-Runner</title>
+    <title data-i18n="pageTitle">Key-Runner</title>
     <link rel="stylesheet" href="style/game.css">
     <link rel="stylesheet" href="style/layout.css">
     <link rel="stylesheet" href="style/interaction.css">
@@ -12,11 +12,11 @@
     <main class="game">
         <header class="topbar">
             <div>
-                <h1>Key-Runner</h1>
+                <img src="logo/logo.png" alt="Key-Runner">
             </div>
             <div class="stats">
-                <div class="stat"><small>TIME</small><b id="time">300</b></div>
-                <div class="stat"><small>SCORE</small><b id="score">0</b></div>
+                <div class="stat"><small data-i18n="time">TIME</small><b id="time">300</b></div>
+                <div class="stat"><small data-i18n="score">SCORE</small><b id="score">0</b></div>
             </div>
         </header>
 
@@ -24,38 +24,63 @@
             <section class="panel">
                 <div class="scene-wrap" id="scene">
                     <div class="scene-hud">
-                        <span class="signal"><i></i>LIVE EXPLORATION</span>
+                        <span class="signal"><i></i><span data-i18n="liveExploration">LIVE EXPLORATION</span></span>
                         <span class="coords" id="coords">X 01.5 / Y 01.5</span>
                     </div>
-                    <div class="fallback" id="fallback">Three.jsの読み込みに失敗しました。</div>
+                    <div class="fallback" id="fallback" data-i18n="threeError">Three.jsの読み込みに失敗しました。</div>
                 </div>
             </section>
 
             <section class="panel">
                 <div class="map-head">
-                    <h2>TACTICAL MAP</h2>
-                    <span>15 × 15 GRID</span>
+                    <h2 data-i18n="tacticalMap">TACTICAL MAP</h2>
+                    <span id="grid-size">15 × 15 GRID</span>
                 </div>
                 <div class="map" id="map"></div>
-                <div class="legend"><b>▲ 自分の向き</b><b>● ゴール</b></div>
-                <div class="help">矢印が現在の視線方向。迷宮の奥にある脱出ゲートへ向かおう。</div>
+                <div class="legend"><b data-i18n="legendPlayer">▲ 自分の向き</b><b data-i18n="legendGoal">● ゴール</b></div>
+                <div class="help" data-i18n="mapHelp">矢印が現在の視線方向。迷宮の奥にある脱出ゲートへ向かおう。</div>
             </section>
         </div>
 
-        <button class="button restart-top" id="restart">リスタート</button>
+        <button class="button pause-top" id="pause" type="button" data-i18n="pause">一時中断</button>
         <section class="typing">
-            <div class="prompt" id="prompt">探索して、赤いタイピング扉を探そう。</div>
+            <div class="prompt" id="prompt" data-i18n="explorePrompt">探索して、赤いタイピング扉を探そう。</div>
             <div class="word" id="word">---</div>
-            <input id="input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="扉の前で単語を入力してEnter">
-            <div class="msg" id="msg">WASDで探索開始。</div>
+            <input id="input" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-placeholder="inputPlaceholder" placeholder="扉の前で単語を入力してEnter">
+            <div class="msg" id="msg" data-i18n="initialMessage">扉から遠ざかることもできます。</div>
         </section>
     </main>
+
+    <div class="overlay" id="pause-overlay" hidden>
+        <div class="modal pause-modal">
+            <h2 data-i18n="pauseTitle">一時中断</h2>
+            <div class="pause-actions">
+                <button class="button" id="resume" type="button" data-i18n="resume">続ける</button>
+                <button class="button" id="pause-restart" type="button" data-i18n="retry">やり直す</button>
+                <a class="button" href="index.html" data-i18n="home">ホームに戻る</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-screen" id="loading-screen" aria-live="polite">
+        <div class="loading-box">
+            <div class="loading-logo" aria-hidden="true">
+                <img src="log_anime/logo.gif" alt="">
+            </div>
+            <p class="loading-label" data-i18n="loading">LOADING KEY-RUNNER</p>
+            <div class="progress-track" role="progressbar" aria-label="Loading" data-i18n-aria-label="loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="progress-value" id="progress-value">0%</p>
+            <button class="button launch-button is-disabled" id="game-launch" type="button" disabled data-i18n="launch">ゲームを始める</button>
+        </div>
+    </div>
 
     <div class="overlay" id="overlay">
         <div class="modal">
             <h2 id="title"></h2>
             <p id="result"></p>
-            <button class="button" id="again">もう一度</button>
+            <button class="button" id="again" data-i18n="again">もう一度</button>
         </div>
     </div>
 

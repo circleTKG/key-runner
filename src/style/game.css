@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
 
 :root {
+    --font-scale: 1;
     --ink: #142333;
     --muted: #5d7184;
     --panel: rgba(255, 255, 255, .96);
@@ -18,11 +19,14 @@
 body {
     margin: 0;
     min-height: 100vh;
+    height: 100vh;
     padding: 18px;
+    overflow: hidden;
     overflow-x: hidden;
-    background: #f4f8fb;
+    background: linear-gradient(135deg, #dff5f7 0%, #eef4fa 48%, #f9e8ef 100%);
     color: var(--ink);
     font-family: 'Zen Kaku Gothic New', 'Space Grotesk', sans-serif;
+    font-size: calc(16px * var(--font-scale));
 }
 
 body::before {
@@ -38,7 +42,8 @@ body::before {
 }
 
 .game {
-    width: min(1600px, 100%);
+    width: 100%;
+    height: 100%;
     margin: auto;
 }
 
@@ -47,7 +52,8 @@ body::before {
     justify-content: space-between;
     align-items: end;
     gap: 18px;
-    margin-bottom: 16px;
+    height: 58px;
+    margin-bottom: 12px;
 }
 
 h1 {
@@ -65,42 +71,45 @@ h1 span {
 }
 
 .stat {
-    min-width: 104px;
-    padding: 10px 14px;
+    min-width: 126px;
+    padding: 11px 15px;
     border: 1px solid var(--line);
     border-radius: 10px;
-    background: #ffffff;
-    box-shadow: 0 5px 18px rgba(28, 61, 82, .1);
+    background: rgba(255, 255, 255, .46);
+    box-shadow: 0 10px 26px rgba(28, 61, 82, .12), inset 0 1px 0 rgba(255, 255, 255, .7);
+    backdrop-filter: blur(16px) saturate(125%);
 }
 
 .stat small {
     display: block;
     color: var(--muted);
-    font: 600 10px 'Space Grotesk', sans-serif;
+    font: 600 calc(11px * var(--font-scale)) 'Space Grotesk', sans-serif;
     letter-spacing: .16em;
 }
 
 .stat b {
-    font: 700 23px 'Space Grotesk', sans-serif;
+    font: 700 calc(25px * var(--font-scale)) 'Space Grotesk', sans-serif;
 }
 
 .layout {
     display: grid;
     grid-template-columns: 55% 45%;
     justify-content: space-between;
+    height: calc(100% - 70px);
 }
 
 .panel,
 .typing {
     border: 1px solid var(--line);
     border-radius: 15px;
-    background: var(--panel);
+    background: rgba(255, 255, 255, .46);
     box-shadow: 0 12px 34px rgba(28, 61, 82, .12);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(20px) saturate(125%);
 }
 
 .panel {
-    padding: 12px;
+    padding: 20px;
+    height: 100%;
 }
 
 .panel:first-child {
@@ -110,7 +119,7 @@ h1 span {
 
 .scene-wrap {
     position: relative;
-    height: clamp(520px, 72vh, 820px);
+    height: 100%;
     overflow: hidden;
     border: 1px solid #27506a;
     border-radius: 10px;
@@ -168,7 +177,7 @@ h1 span {
 .help {
     margin: 9px 2px 0;
     color: var(--muted);
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale));
 }
 
 .map-head {
@@ -180,25 +189,26 @@ h1 span {
 
 .map-head h2 {
     margin: 0;
-    font: 600 14px 'Space Grotesk', sans-serif;
+    font: 600 calc(14px * var(--font-scale)) 'Space Grotesk', sans-serif;
     letter-spacing: .12em;
 }
 
 .map-head span {
     color: var(--muted);
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale));
 }
 
 .map {
     display: grid;
-    grid-template-columns: repeat(15, 1fr);
+    grid-template-columns: repeat(var(--map-columns, 15), 1fr);
     width: 100%;
     aspect-ratio: 1;
     gap: 2px;
     padding: 7px;
     border: 1px solid #c9dce5;
     border-radius: 10px;
-    background: #eef4f7;
+    background: rgba(255, 255, 255, .32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65);
 }
 
 .cell {
@@ -233,7 +243,7 @@ h1 span {
     justify-content: space-between;
     margin-top: 11px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale));
 }
 
 .legend b {
@@ -241,9 +251,11 @@ h1 span {
     font-weight: 500;
 }
 
-.restart-top {
-    display: block;
-    margin: 10px 0 0 auto;
+.pause-top {
+    position: fixed;
+    top: 88px;
+    right: 28px;
+    z-index: 7;
 }
 
 .typing {
@@ -254,9 +266,9 @@ h1 span {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 7px 18px;
-    width: min(560px, calc(100% - 28px));
+    width: min(760px, calc(100% - 56px));
     margin: 0;
-    padding: 15px 17px;
+    padding: 20px 24px;
     opacity: 0;
     pointer-events: none;
     transform: translate(-50%, 20px);
@@ -271,26 +283,27 @@ h1 span {
 
 .prompt {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .word {
-    min-height: 39px;
+    min-height: 48px;
     color: var(--cyan);
-    font: 700 31px / 1.2 'Space Grotesk', sans-serif;
+    font: 700 38px / 1.2 'Space Grotesk', sans-serif;
     letter-spacing: .08em;
 }
 
 .typing input {
     grid-column: 1 / -1;
     width: 100%;
-    padding: 12px 14px;
+    padding: 16px 18px;
     border: 1px solid #b9cbd5;
     border-radius: 8px;
     outline: 0;
-    background: #ffffff;
+    background: rgba(255, 255, 255, .58);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7);
     color: var(--ink);
-    font: 600 18px 'Space Grotesk', sans-serif;
+    font: 600 22px 'Space Grotesk', sans-serif;
     text-align: center;
 }
 
@@ -298,19 +311,36 @@ h1 span {
     grid-column: 1 / -1;
     min-height: 20px;
     color: var(--gold);
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
 }
 
 .button {
-    padding: 9px 14px;
-    border: 1px solid #9dbbc8;
-    border-radius: 7px;
-    background: #e7f4f8;
+    padding: 13px 20px;
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .34);
     color: #14506a;
-    font: 600 12px 'Space Grotesk', sans-serif;
+    font: 600 15px 'Space Grotesk', sans-serif;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(20, 65, 84, .08), inset 0 1px 0 rgba(255, 255, 255, .7);
+    backdrop-filter: blur(12px);
 }
+
+.button:hover, .button:focus-visible { background: rgba(255, 255, 255, .62); }
+
+.loading-screen { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(220, 239, 244, .72); color: var(--ink); backdrop-filter: blur(16px); }
+.loading-box { width: min(620px, calc(100% - 36px)); min-height: 430px; padding: 52px clamp(28px, 8vw, 76px) 44px; border: 1px solid rgba(255, 255, 255, .78); border-radius: 28px; background: rgba(255, 255, 255, .48); box-shadow: 0 30px 90px rgba(20, 65, 84, .22), inset 0 1px 0 rgba(255, 255, 255, .85); backdrop-filter: blur(28px) saturate(135%); }
+.loading-logo { width: min(460px, 100%); aspect-ratio: 16 / 9; margin: 0 auto 30px; animation: logo-pulse 1.5s ease-in-out infinite; }
+.loading-label { margin: 0 0 16px; font: 700 14px 'Space Grotesk', sans-serif; letter-spacing: .14em; text-align: center; }
+.progress-track { height: 10px; overflow: hidden; border: 1px solid #b7c8d2; background: #e3edf1; }
+.progress-bar { width: 0; height: 100%; background: var(--red); transition: width .08s linear; }
+.progress-value { margin: 10px 0 18px; color: var(--muted); font: 700 13px 'Space Grotesk', sans-serif; text-align: right; }
+.launch-button { width: 100%; }
+.launch-button.is-disabled { opacity: .45; cursor: wait; }
+.loading-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+@keyframes logo-pulse { 50% { transform: translateY(-8px) rotate(1deg); } }
+.loading-screen.is-complete { opacity: 0; pointer-events: none; transition: opacity .35s; }
 
 .overlay {
     position: fixed;
@@ -318,31 +348,59 @@ h1 span {
     z-index: 10;
     display: none;
     place-items: center;
-    background: rgba(20, 35, 51, .5);
+    background: rgba(20, 35, 51, .28);
+    backdrop-filter: blur(10px);
 }
 
 .overlay.show {
     display: grid;
 }
 
+#pause-overlay[hidden] { display: none; }
+.pause-actions { display: grid; gap: 10px; margin-top: 22px; }
+
 .modal {
     width: min(430px, 90%);
     padding: 34px;
     border: 1px solid var(--line);
     border-radius: 16px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, .62);
+    box-shadow: 0 24px 70px rgba(20, 35, 51, .2), inset 0 1px 0 rgba(255, 255, 255, .8);
+    backdrop-filter: blur(28px) saturate(130%);
     text-align: center;
 }
 
 .modal h2 {
     margin: 0 0 8px;
     color: var(--cyan);
-    font: 700 32px 'Space Grotesk', sans-serif;
+    font: 700 calc(32px * var(--font-scale)) 'Space Grotesk', sans-serif;
 }
 
 .modal p {
     color: var(--muted);
     line-height: 1.8;
+}
+
+.result-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.result-actions .button {
+    width: 100%;
+    color: #14506a;
+    text-decoration: none;
+}
+
+.difficulty-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.difficulty-actions .button {
+    padding-inline: 6px;
 }
 
 .fallback {
@@ -351,3 +409,22 @@ h1 span {
     color: var(--red);
     font-weight: 700;
 }
+
+.tutorial-levels {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.tutorial-levels a {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .38);
+    color: var(--cyan);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.topbar img { width: 200%; max-width: 300px; }

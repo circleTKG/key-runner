@@ -1,0 +1,88 @@
+:root {
+    --font-scale: 1;
+    --ink: #142333;
+    --muted: #5d7184;
+    --line: rgba(255, 255, 255, .62);
+    --cyan: #087e9a;
+    --red: #d63d61;
+    --glass: rgba(255, 255, 255, .46);
+    --glass-strong: rgba(255, 255, 255, .68);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    display: grid;
+    min-height: 100vh;
+    margin: 0;
+    padding: 24px;
+    place-items: center;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #dff5f7 0%, #eef4fa 48%, #f9e8ef 100%);
+    color: var(--ink);
+    font-family: 'Zen Kaku Gothic New', 'Space Grotesk', sans-serif;
+    font-size: calc(16px * var(--font-scale));
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    opacity: .4;
+    background: radial-gradient(circle at 18% 18%, rgba(8, 126, 154, .34), transparent 27%), radial-gradient(circle at 82% 78%, rgba(214, 61, 97, .22), transparent 30%), linear-gradient(rgba(31, 91, 119, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(31, 91, 119, .05) 1px, transparent 1px);
+    background-size: 42px 42px;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: rgba(255, 255, 255, .12);
+    backdrop-filter: blur(70px);
+}
+
+.home {
+    width: min(800px, 100%);
+    padding: clamp(28px, 8vw, 64px);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--glass);
+    box-shadow: 0 24px 70px rgba(20, 65, 84, .16), inset 0 1px 0 rgba(255, 255, 255, .7);
+    backdrop-filter: blur(24px) saturate(125%);
+}
+
+.home__header { display: grid; gap: 10px; }
+.home__header img { width: 700%; max-width: 650px; }
+.eyebrow { margin: 0; color: var(--red); font: 700 12px / 1.2 'Space Grotesk', sans-serif; letter-spacing: .12em; }
+h1, h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; }
+h1 { font-size: clamp(42px, 10vw, 68px); line-height: .95; }
+
+.language-select { display: flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--glass-strong); color: var(--ink); }
+.home__actions { display: grid; gap: 10px; margin-top: 42px; }
+.settings-list { display: grid; gap: 12px; margin-top: 24px; }
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px 14px; border: 1px solid rgba(255, 255, 255, .62); border-radius: 10px; background: rgba(255, 255, 255, .24); color: var(--ink); }
+
+.button { display: block; padding: 13px 16px; border: 1px solid rgba(255, 255, 255, .7); border-radius: 10px; background: rgba(255, 255, 255, .34); color: #14506a; font: 600 14px 'Space Grotesk', sans-serif; text-align: center; text-decoration: none; cursor: pointer; box-shadow: 0 8px 20px rgba(20, 65, 84, .08), inset 0 1px 0 rgba(255, 255, 255, .7); backdrop-filter: blur(12px); }
+.button:hover, .button:focus-visible { background: rgba(255, 255, 255, .62); }
+.button--primary { border-color: rgba(214, 61, 97, .7); background: rgba(214, 61, 97, .78); color: white; }
+.button--primary:hover, .button--primary:focus-visible { background: rgba(214, 61, 97, .92); }
+.mode-options { display: grid; gap: 10px; margin-top: 24px; }
+
+.modal[hidden] { display: none; }
+.modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; }
+.modal__backdrop { position: absolute; inset: 0; background: rgba(20, 35, 51, .28); backdrop-filter: blur(10px); }
+.modal__panel { position: relative; width: min(800px, 100%); padding: clamp(28px, 7vw, 44px); border: 1px solid rgba(255, 255, 255, .72); border-radius: 20px; background: rgba(255, 255, 255, .62); box-shadow: 0 24px 70px rgba(20, 35, 51, .2), inset 0 1px 0 rgba(255, 255, 255, .8); backdrop-filter: blur(28px) saturate(130%); }
+.modal__panel h2 { margin: 8px 0 14px; color: var(--cyan); font-size: 32px; }
+.modal__panel p, .modal__panel li { color: var(--muted); line-height: 1.8; }
+.modal__panel ul { margin: 18px 0 0; padding-left: 20px; }
+.tutorial-list { display: grid; gap: 14px; margin: 22px 0 0; padding: 0; list-style: none; counter-reset: tutorial; }
+.tutorial-list li { position: relative; display: grid; gap: 3px; padding: 13px 15px 13px 45px; border: 1px solid rgba(255, 255, 255, .62); border-radius: 10px; background: rgba(255, 255, 255, .24); counter-increment: tutorial; }
+.tutorial-list li::before { content: counter(tutorial); position: absolute; top: 13px; left: 15px; color: var(--red); font: 700 18px 'Space Grotesk', sans-serif; }
+.tutorial-list b { color: var(--ink); }
+.modal__close { position: absolute; top: 12px; right: 14px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .35); color: var(--muted); font-size: 28px; line-height: 1; cursor: pointer; }
+body.modal-open { overflow: hidden; }

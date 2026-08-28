@@ -1,0 +1,18 @@
+body {
+   background-color: FFFFFF;
+}
+
+h1 {
+ color: black;
+}
+
+.text {
+    letter-spacing: 5px;
+}
+p{
+    font: size 16px;
+    line-height: 1.6
+}
+.section {
+    margin: 0 auto;
+}

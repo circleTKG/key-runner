@@ -1,38 +1,148 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
 import { createKeyboardState } from './controls.js';
 
-const raw = [
+const translations = {
+    ja: { pageTitle: 'Key-Runner', time: 'TIME', score: 'SCORE', liveExploration: 'LIVE EXPLORATION', threeError: 'Three.jsの読み込みに失敗しました。', tacticalMap: 'TACTICAL MAP', legendPlayer: '▲ 自分の向き', legendGoal: '● ゴール', mapHelp: '矢印が現在の視線方向。迷宮の奥にある脱出ゲートへ向かおう。', restart: 'リスタート', explorePrompt: '探索して、赤いタイピング扉を探そう。', inputPlaceholder: '扉の前で単語を入力してEnter', initialMessage: '扉から遠ざかることもできます。', loading: 'LOADING KEY-RUNNER', launch: 'ゲームを始める', again: 'もう一度', tutorialPrompt: 'チュートリアル：WASDで右へ進み、赤い扉を目指そう。', doorPrompt: '単語を入力して扉を開けよう。', tutorialDoorPrompt: 'チュートリアル：表示された単語を入力して扉を開けよう。', idleMessage: 'WASDで探索開始。', tutorialIdleMessage: 'WADで右へ進もう。', notNearDoor: '扉の近くにいません。', correct: '正解！扉が開いた。', incorrect: '不正解。', seconds: '秒減少。', tutorialComplete: 'チュートリアル完了！', escaped: '脱出成功！', timeUp: '時間切れ。', home: 'ホームへ戻る', easy: '簡単', normal: '普通', hard: '難しい' },
+    en: { pageTitle: 'Key-Runner', time: 'TIME', score: 'SCORE', liveExploration: 'LIVE EXPLORATION', threeError: 'Three.js failed to load.', tacticalMap: 'TACTICAL MAP', legendPlayer: '▲ Player direction', legendGoal: '● Goal', mapHelp: 'Follow the arrow and reach the escape gate deep in the maze.', restart: 'Restart', explorePrompt: 'Explore and find the red typing door.', inputPlaceholder: 'Type the word near the door and press Enter', initialMessage: 'You can also move away from the door.', loading: 'LOADING KEY-RUNNER', launch: 'Start game', again: 'Again', tutorialPrompt: 'Tutorial: move right with WASD and find the red door.', doorPrompt: 'Type the word to open the door.', tutorialDoorPrompt: 'Tutorial: type the shown word to open the door.', idleMessage: 'Use WASD to explore.', tutorialIdleMessage: 'Use WASD to move right.', notNearDoor: 'You are not near a door.', correct: 'Correct! The door opened.', incorrect: 'Incorrect. ', seconds: ' seconds lost.', tutorialComplete: 'Tutorial complete!', escaped: 'Escape successful!', timeUp: 'Time up.', home: 'Back to home', easy: 'Easy', normal: 'Normal', hard: 'Hard' },
+    es: { pageTitle: 'Key-Runner', time: 'TIEMPO', score: 'PUNTOS', liveExploration: 'EXPLORACION EN VIVO', threeError: 'No se pudo cargar Three.js.', tacticalMap: 'MAPA TACTICO', legendPlayer: '▲ Direccion del jugador', legendGoal: '● Meta', mapHelp: 'Sigue la flecha y llega a la puerta de escape al fondo del laberinto.', restart: 'Reiniciar', explorePrompt: 'Explora y encuentra la puerta roja de mecanografia.', inputPlaceholder: 'Escribe la palabra cerca de la puerta y pulsa Enter', initialMessage: 'Tambien puedes alejarte de la puerta.', loading: 'CARGANDO KEY-RUNNER', launch: 'Iniciar partida', again: 'Otra vez', tutorialPrompt: 'Tutorial: avanza a la derecha con WASD y busca la puerta roja.', doorPrompt: 'Escribe la palabra para abrir la puerta.', tutorialDoorPrompt: 'Tutorial: escribe la palabra mostrada para abrir la puerta.', idleMessage: 'Usa WASD para explorar.', tutorialIdleMessage: 'Usa WASD para avanzar a la derecha.', notNearDoor: 'No estas cerca de una puerta.', correct: 'Correcto. La puerta se abrio.', incorrect: 'Incorrecto. ', seconds: ' segundos perdidos.', tutorialComplete: 'Tutorial completado.', escaped: 'Escape conseguido.', timeUp: 'Se acabo el tiempo.', home: 'Volver al inicio', easy: 'Facil', normal: 'Normal', hard: 'Dificil' }
+};
+translations.ja.grid = 'GRID';
+translations.ja.pause = '一時中断';
+translations.ja.pauseTitle = '一時中断';
+translations.ja.resume = '続ける';
+translations.ja.retry = 'やり直す';
+translations.ja.home = 'ホームに戻る';
+translations.ja.gateBreached = 'GATE BREACHED';
+translations.ja.timeUpTitle = 'TIME UP';
+translations.en.grid = 'GRID';
+translations.en.pause = 'Pause';
+translations.en.pauseTitle = 'Paused';
+translations.en.resume = 'Resume';
+translations.en.retry = 'Retry';
+translations.en.home = 'Back to home';
+translations.en.gateBreached = 'GATE BREACHED';
+translations.en.timeUpTitle = 'TIME UP';
+translations.es.grid = 'CUADRICULA';
+translations.es.pause = 'Pausa';
+translations.es.pauseTitle = 'Juego pausado';
+translations.es.resume = 'Continuar';
+translations.es.retry = 'Reintentar';
+translations.es.home = 'Volver al inicio';
+translations.es.gateBreached = 'PUERTA ABIERTA';
+translations.es.timeUpTitle = 'TIEMPO AGOTADO';
+const locale = translations[localStorage.getItem('key-runner-locale')] ? localStorage.getItem('key-runner-locale') : 'ja';
+const text = translations[locale];
+document.documentElement.lang = locale;
+document.title = text.pageTitle;
+
+const mazeLayouts = {
+    easy: [
+        '###############',
+        '#S...........G#',
+        '#.#####.#####.#',
+        '#.....#.#.....#',
+        '#####.#.#.#####',
+        '#.....#.#.....#',
+        '#.#####.#####.#',
+        '#.............#',
+        '#.#####.#####.#',
+        '#.....#.#.....#',
+        '#####.#.#.#####',
+        '#.....#.#.....#',
+        '#.#####.#####.#',
+        '#.............#',
+        '###############'
+    ],
+    normal: [
+        '###############',
+        '#S....#....L..#',
+        '#.###.#L#####.#',
+        '#...#.#....G#.#',
+        '###.#.#####L#.#',
+        '#...#.....#.L.#',
+        '#.#.#####.#.#.#',
+        '#.#...L...#.L.#',
+        '#.#####.#####.#',
+        '#.....#.....#.#',
+        '#.###.#####.#.#',
+        '#...#.......#.#',
+        '###.#########.#',
+        '#.L..........L#',
+        '###############'
+    ],
+    hard: [
+        '###############',
+        '#S..#....L....#',
+        '#.#.#.#######.#',
+        '#.#...#...#...#',
+        '#.#####.#.#.###',
+        '#.....#.#.#...#',
+        '#####.#.#.###.#',
+        '#...L.#...#...#',
+        '#.#####.#####.#',
+        '#.....#.....#.#',
+        '#.###.#####.#.#',
+        '#...#.......#.#',
+        '###.#########.#',
+        '#.L..........G#',
+        '###############'
+    ]
+};
+
+const isTutorial = new URLSearchParams(window.location.search).get('mode') === 'tutorial';
+const tutorialLayout = [
     '###############',
-    '#S....#....L..#',
-    '#.###.#L#####.#',
-    '#...#.#....G#.#',
-    '###.#.#####L#.#',
-    '#...#.....#.L.#',
-    '#.#.#####.#.#.#',
-    '#.#...L...#.L.#',
-    '#.#####.#####.#',
-    '#.....#.....#.#',
-    '#.###.#####.#.#',
-    '#...#.......#.#',
-    '###.#########.#',
-    '#.L..........L#',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
+    '#S.....L.....G#',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
+    '###############',
     '###############'
 ];
-
+const selectedDifficulty = localStorage.getItem('key-runner-difficulty');
+const raw = isTutorial ? tutorialLayout : mazeLayouts[selectedDifficulty] || mazeLayouts.normal;
+const fontScales = { small: '0.8', medium: '1', large: '1.6' };
+document.documentElement.style.setProperty('--font-scale', fontScales[localStorage.getItem('key-runner-font-size')] || '1');
 const grid = raw.map((row) => row.split(''));
 const H = grid.length;
 const W = grid[0].length;
-const start = { x: 1.5, y: 1.5 };
-const goal = { x: 11.5, y: 3.5 };
+
+function findCell(value) {
+    for (let y = 0; y < H; y += 1) {
+        const x = grid[y].indexOf(value);
+        if (x !== -1) {
+            return { x: x + 0.5, y: y + 0.5 };
+        }
+    }
+    return { x: 1.5, y: 1.5 };
+}
+
+const start = findCell('S');
+const goal = findCell('G');
 const player = { x: start.x, y: start.y, angle: 0 };
-const words = ['key-runner'];
+const difficultySettings = {
+    easy: { time: 360, speed: 0.07, missPenalty: 3, words: ['key'] },
+    normal: { time: 300, speed: 0.06, missPenalty: 5, words: ['key-runner'] },
+    hard: { time: 180, speed: 0.05, missPenalty: 10, words: ['keyboard', 'labyrinth', 'key-runner'] }
+};
+const difficulty = isTutorial ? { time: 999, speed: 0.06, missPenalty: 0, words: ['open'] } : difficultySettings[localStorage.getItem('key-runner-difficulty')] || difficultySettings.normal;
 
 let unlocked = new Set();
 let activeDoor = null;
 let word = '';
 let score = 0;
-let time = 300;
+let time = difficulty.time;
 let ended = false;
+let gameStarted = false;
+let paused = false;
 let timer;
 let doorMeshes = [];
 let renderer;
@@ -47,6 +157,7 @@ let avatarGroup;
 const sceneElement = document.getElementById('scene');
 const fallback = document.getElementById('fallback');
 const mapElement = document.getElementById('map');
+mapElement.style.setProperty('--map-columns', W);
 const typingElement = document.querySelector('.typing');
 const input = document.getElementById('input');
 const wordElement = document.getElementById('word');
@@ -54,6 +165,21 @@ const promptElement = document.getElementById('prompt');
 const messageElement = document.getElementById('msg');
 const coordinatesElement = document.getElementById('coords');
 const keys = createKeyboardState();
+const pauseOverlay = document.getElementById('pause-overlay');
+const pauseButton = document.getElementById('pause');
+const resumeButton = document.getElementById('resume');
+const pauseRestartButton = document.getElementById('pause-restart');
+
+document.querySelectorAll('[data-i18n]').forEach((element) => {
+    element.textContent = text[element.dataset.i18n];
+});
+document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+    element.placeholder = text[element.dataset.i18nPlaceholder];
+});
+document.querySelectorAll('[data-i18n-aria-label]').forEach((element) => {
+    element.setAttribute('aria-label', text[element.dataset.i18nAriaLabel]);
+});
+document.getElementById('grid-size').textContent = `${W} × ${H} ${text.grid}`;
 
 function material(color, roughness = 0.7, metalness = 0) {
     return new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -120,8 +246,8 @@ function buildMaze() {
     doorMeshes = [];
 
     const floorMaterial = material(0x3a6978, 0.62, 0.22);
-    const wallMaterial = material(0x0d1d32, 0.5, 0.7);
-    const ceilingMaterial = material(0x060d18, 0.9);
+    const wallMaterial = material(0xFFFFFF, 0.5, 0.7);
+    const ceilingMaterial = material(0x0606, 0.9);
 
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, H), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -201,7 +327,7 @@ function buildPlayerAvatar() {
 }
 
 function updatePlayer() {
-    if (ended) {
+    if (ended || paused || !gameStarted) {
         return;
     }
     if (!avatarGroup) {
@@ -210,7 +336,7 @@ function updatePlayer() {
     avatarGroup.visible = false;
     renderer.toneMappingExposure = 1.45;
     scene.fog.density = 0.026;
-    const speed = (keys.ShiftLeft || keys.ShiftRight) ? 0.09 : 0.06;
+    const speed = (keys.ShiftLeft || keys.ShiftRight) ? difficulty.speed + 1 : difficulty.speed;
 
     if (keys.KeyW || keys.ArrowUp) {
         moveRelative(speed);
@@ -258,13 +384,13 @@ function updateDoorVisuals(now) {
     input.disabled = !near;
 
     if (near) {
-        promptElement.textContent = '単語を入力して扉を開けよう。';
+        promptElement.textContent = isTutorial ? text.tutorialDoorPrompt : text.doorPrompt;
         wordElement.textContent = word;
         if (!wasNear) {
             input.focus();
         }
     } else {
-        promptElement.textContent = '探索中……赤い扉を探そう。';
+        promptElement.textContent = isTutorial ? text.tutorialPrompt : text.explorePrompt;
         wordElement.textContent = '---';
     }
     if (goalCore) {
@@ -290,7 +416,7 @@ function drawMap() {
 }
 
 function chooseWord() {
-    word = words[Math.floor(Math.random() * words.length)];
+    word = difficulty.words[Math.floor(Math.random() * difficulty.words.length)];
 }
 
 function updateHud() {
@@ -305,9 +431,13 @@ function finish(win) {
     }
     ended = true;
     clearInterval(timer);
-    document.getElementById('title').textContent = win ? 'GATE BREACHED' : 'TIME UP';
-    document.getElementById('result').innerHTML = win ? `脱出成功！<br>スコア：<b>${score}</b>` : `時間切れ。<br>スコア：<b>${score}</b>`;
+    document.getElementById('title').textContent = win ? text.gateBreached : text.timeUpTitle;
+    const resultMessage = isTutorial && win ? text.tutorialComplete : win ? text.escaped : text.timeUp;
+    document.getElementById('result').innerHTML = `${resultMessage}<br>${text.score}: <b>${score}</b><div class="result-actions"><a class="button" href="index.html">${text.home}</a><div class="difficulty-actions"><a class="button" href="key-runner.html" data-level="easy">${text.easy}</a><a class="button" href="key-runner.html" data-level="normal">${text.normal}</a><a class="button" href="key-runner.html" data-level="hard">${text.hard}</a></div></div>`;
     document.getElementById('overlay').classList.add('show');
+    document.querySelectorAll('.difficulty-actions a').forEach((link) => {
+        link.addEventListener('click', () => localStorage.setItem('key-runner-difficulty', link.dataset.level));
+    });
 }
 
 function reset() {
@@ -316,20 +446,24 @@ function reset() {
     player.angle = 0;
     unlocked = new Set();
     score = 0;
-    time = 300;
+    time = difficulty.time;
     ended = false;
+    paused = false;
     activeDoor = null;
     typingElement.classList.remove('open');
     chooseWord();
     input.value = '';
-    messageElement.textContent = 'WASDで探索開始。';
+    messageElement.textContent = isTutorial ? text.tutorialIdleMessage : text.idleMessage;
     document.getElementById('overlay').classList.remove('show');
+    pauseOverlay.hidden = true;
+    pauseOverlay.classList.remove('show');
     buildMaze();
     drawMap();
     updateHud();
     clearInterval(timer);
+    if (!gameStarted) return;
     timer = setInterval(() => {
-        if (!ended) {
+        if (!ended && !paused) {
             time -= 1;
             updateHud();
             if (time <= 0) {
@@ -361,31 +495,46 @@ input.addEventListener('keydown', (event) => {
         return;
     }
     if (!activeDoor) {
-        messageElement.textContent = 'タイピング扉の近くにいません。';
+        messageElement.textContent = text.notNearDoor;
         return;
     }
     if (input.value.trim().toLowerCase() === word) {
         unlocked.add(activeDoor.id);
         score += 250;
         time = Math.min(150, time + 8);
-        messageElement.textContent = '正解！扉が開いた。+250 / +8秒';
+        messageElement.textContent = `${text.correct} +250 / +8${locale === 'ja' ? '秒' : locale === 'es' ? ' s' : ' sec'}`;
         input.value = '';
         chooseWord();
         drawMap();
     } else {
-        time = Math.max(0, time - 5);
+        time = Math.max(0, time - difficulty.missPenalty);
         updateHud();
-        messageElement.textContent = '不正解。5秒減少。';
+        messageElement.textContent = `${text.incorrect}${difficulty.missPenalty}${text.seconds}`;
         input.select();
     }
 });
 
-document.getElementById('restart').onclick = reset;
+function setPaused(value) {
+    if (!gameStarted || ended) return;
+    paused = value;
+    pauseOverlay.hidden = !value;
+    pauseOverlay.classList.toggle('show', value);
+    if (value) {
+        input.blur();
+        resumeButton.focus();
+    } else {
+        pauseButton.focus();
+    }
+}
+
+pauseButton.onclick = () => setPaused(true);
+resumeButton.onclick = () => setPaused(false);
+pauseRestartButton.onclick = () => { setPaused(false); reset(); };
 document.getElementById('again').onclick = reset;
 window.addEventListener('resize', resize);
 
 scene = new THREE.Scene();
-scene.background = new THREE.Color(0x040a12);
+scene.background = new THREE.Color(0xFFFFFF);
 scene.fog = new THREE.FogExp2(0x07131e, 0.047);
 camera = new THREE.PerspectiveCamera(72, 1, 0.05, 100);
 renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -405,3 +554,29 @@ buildGoal();
 resize();
 reset();
 requestAnimationFrame(loop);
+
+const loadingScreen = document.getElementById('loading-screen');
+const launchButton = document.getElementById('game-launch');
+const progressBar = document.getElementById('progress-bar');
+const progressValue = document.getElementById('progress-value');
+const progressTrack = document.querySelector('.progress-track');
+let progress = 0;
+const loadingTimer = setInterval(() => {
+    progress = Math.min(progress + 10, 100);
+    progressBar.style.width = `${progress}%`;
+    progressValue.textContent = `${progress}%`;
+    progressTrack.setAttribute('aria-valuenow', progress);
+    if (progress === 100) {
+        clearInterval(loadingTimer);
+        launchButton.disabled = false;
+        launchButton.classList.remove('is-disabled');
+    }
+}, 80);
+
+function launchGame() {
+    gameStarted = true;
+    loadingScreen.classList.add('is-complete');
+    reset();
+}
+
+launchButton.addEventListener('click', launchGame);

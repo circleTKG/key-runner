@@ -1,15 +1,15 @@
 .game {
-    width: min(1600px, 100%);
+    width: 100%;
 }
 
 .layout {
-    grid-template-columns: 55% 40%;
+    grid-template-columns: 60% 38%;
     justify-content: space-between;
     gap: 0;
 }
 
 .scene-wrap {
-    height: clamp(520px, 72vh, 820px);
+    height: 100%;
     aspect-ratio: auto;
 }
 
@@ -20,8 +20,7 @@
 
 @media (max-width: 1200px) {
     .game {
-        width: 1600px;
-        max-width: none;
+        width: 100%;
     }
 
     .layout {
@@ -29,7 +28,6 @@
     }
 
     .scene-wrap {
-        height: clamp(520px, 72vh, 820px);
-        min-height: 520px;
+        height: 100%;
     }
 }
