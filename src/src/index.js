@@ -191,7 +191,9 @@ function setModal(open, modalId = 'rules-modal') {
 
 language.addEventListener('change', () => setLanguage(language.value));
 fontSize.addEventListener('change', () => setFontSize(fontSize.value));
-gameStart.addEventListener('click', () => setModal(true, 'mode-modal'));
+gameStart.addEventListener('click', () => {
+    window.location.href = 'key-runner.html?mode=tutorial';
+});
 scoreboardOpen.addEventListener('click', async () => { setModal(true, 'scoreboard-modal'); await loadScoreboard(); });
 openButton.addEventListener('click', () => setModal(true));
 closeButton.addEventListener('click', () => setModal(false, 'rules-modal'));

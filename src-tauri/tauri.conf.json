@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "key-runner",
-  "version": "0.1.0",
+  "version": "0.1.52",
   "identifier": "com.key.dev",
   "build": {
     "frontendDist": "../src",
