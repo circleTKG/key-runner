@@ -511,21 +511,42 @@ function finish(win) {
     clearInterval(timer);
     const clearTime = Math.max(0, difficulty.time - time);
     const totalScore = clearTime * 5 + score;
+    const currentLevel = isTutorial ? 'tutorial' : selectedDifficulty;
+    const nextLevel = currentLevel === 'tutorial'
+        ? 'easy'
+        : currentLevel === 'easy'
+            ? 'normal'
+            : currentLevel === 'normal'
+                ? 'hard'
+                : currentLevel === 'hard'
+                    ? 'extreme'
+                    : null;
+
     document.getElementById('title').textContent = win ? text.gateBreached : text.timeUpTitle;
     const resultMessage = isTutorial && win ? text.tutorialComplete : win ? text.escaped : text.timeUp;
-    const extremeResult = difficulty === difficultySettings.extreme && win ? `<br>TIME: <b>${clearTime}s</b><br>TOTAL SCORE: <b>${totalScore}</b>` : '';
-    document.getElementById('result').innerHTML = `${resultMessage}<br>${text.score}: <b>${score}</b>${extremeResult}<div class="result-actions"><a class="button" href="index.html">${text.home}</a><div class="difficulty-actions"><a class="button" href="key-runner.html" data-level="easy">${text.easy}</a><a class="button" href="key-runner.html" data-level="normal">${text.normal}</a><a class="button" href="key-runner.html" data-level="hard">${text.hard}</a><a class="button" href="key-runner.html" data-level="extreme">${text.extreme}</a></div></div>`;
+    const extremeResult = difficulty === difficultySettings.extreme && win ? `<br>完走タイム: <b>${clearTime}s</b><br>総合スコア: <b>${totalScore}</b>` : '';
+
+    const actionHtml = [`<a class="button" href="index.html">${text.home}</a>`];
+    if (win && nextLevel) {
+        actionHtml.push(`<a class="button button--primary" href="key-runner.html" data-level="${nextLevel}">${text[nextLevel] || nextLevel}</a>`);
+    }
+
+    document.getElementById('result').innerHTML = `${resultMessage}<br>${text.score}: <b>${score}</b>${extremeResult}<div class="result-actions">${actionHtml.join('')}</div>`;
     document.getElementById('overlay').classList.add('show');
-    document.querySelectorAll('.difficulty-actions a').forEach((link) => {
+
+    document.querySelectorAll('.result-actions a[data-level]').forEach((link) => {
         link.addEventListener('click', () => localStorage.setItem('key-runner-difficulty', link.dataset.level));
     });
+
     if (win) {
-        const currentLevel = isTutorial ? 'tutorial' : selectedDifficulty;
         if (currentLevel !== 'extreme') {
             markDifficultyCleared(currentLevel);
         }
     }
-    if (difficulty === difficultySettings.extreme && win) saveExtremeScore(clearTime, score, totalScore);
+
+    if (difficulty === difficultySettings.extreme && win) {
+        saveExtremeScore(clearTime, score, totalScore);
+    }
 }
 
 function saveExtremeScore(clearTime, baseScore, totalScore) {
