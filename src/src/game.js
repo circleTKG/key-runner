@@ -12,6 +12,7 @@ translations.ja.pauseTitle = '一時中断';
 translations.ja.resume = '続ける';
 translations.ja.retry = 'やり直す';
 translations.ja.home = 'ホームに戻る';
+translations.ja.extreme = '激むず';
 translations.ja.gateBreached = 'GATE BREACHED';
 translations.ja.timeUpTitle = 'TIME UP';
 translations.en.grid = 'GRID';
@@ -20,6 +21,7 @@ translations.en.pauseTitle = 'Paused';
 translations.en.resume = 'Resume';
 translations.en.retry = 'Retry';
 translations.en.home = 'Back to home';
+translations.en.extreme = 'Extreme';
 translations.en.gateBreached = 'GATE BREACHED';
 translations.en.timeUpTitle = 'TIME UP';
 translations.es.grid = 'CUADRICULA';
@@ -30,8 +32,60 @@ translations.es.retry = 'Reintentar';
 translations.es.home = 'Volver al inicio';
 translations.es.gateBreached = 'PUERTA ABIERTA';
 translations.es.timeUpTitle = 'TIEMPO AGOTADO';
+translations.es.extreme = 'Extremo';
 const locale = translations[localStorage.getItem('key-runner-locale')] ? localStorage.getItem('key-runner-locale') : 'ja';
 const text = translations[locale];
+const progressionStorageKey = 'key-runner-progress';
+const progressionOrder = ['tutorial', 'easy', 'normal', 'hard', 'extreme'];
+
+function getDefaultProgressState() {
+    return { tutorial: true, easy: false, normal: false, hard: false, extreme: false };
+}
+
+function getProgressState() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(progressionStorageKey) || 'null');
+        const progress = stored && typeof stored === 'object' ? { ...getDefaultProgressState(), ...stored } : getDefaultProgressState();
+        localStorage.setItem(progressionStorageKey, JSON.stringify(progress));
+        return progress;
+    } catch {
+        const progress = getDefaultProgressState();
+        localStorage.setItem(progressionStorageKey, JSON.stringify(progress));
+        return progress;
+    }
+}
+
+function isLevelUnlocked(level) {
+    if (level === 'tutorial') {
+        return true;
+    }
+    return Boolean(getProgressState()[level]);
+}
+
+function getHighestUnlockedLevel() {
+    const progress = getProgressState();
+    for (let index = progressionOrder.length - 1; index >= 0; index -= 1) {
+        const level = progressionOrder[index];
+        if (level !== 'tutorial' && progress[level]) {
+            return level;
+        }
+    }
+    return 'easy';
+}
+
+function markDifficultyCleared(level) {
+    const progress = getProgressState();
+    const currentIndex = progressionOrder.indexOf(level);
+    if (currentIndex === -1) {
+        return;
+    }
+    const nextLevel = progressionOrder[currentIndex + 1];
+    if (nextLevel && nextLevel !== 'tutorial') {
+        progress[nextLevel] = true;
+    }
+    localStorage.setItem(progressionStorageKey, JSON.stringify(progress));
+}
+
 document.documentElement.lang = locale;
 document.title = text.pageTitle;
 
@@ -86,6 +140,23 @@ const mazeLayouts = {
         '###.#########.#',
         '#.L..........G#',
         '###############'
+    ],
+    extreme: [
+        '###############',
+        '#S..#....L....#',
+        '#.#.#.#######.#',
+        '#.#...#L..#...#',
+        '#.#####.#.#.###',
+        '#.....#.#.#L..#',
+        '#####.#.#.###.#',
+        '#...L.#...#...#',
+        '#.#####.#####.#',
+        '#.....#.....#.#',
+        '#.###.#####.#.#',
+        '#...#.......#.#',
+        '###.#########.#',
+        '#.L.........G#',
+        '###############'
     ]
 };
 
@@ -107,7 +178,9 @@ const tutorialLayout = [
     '###############',
     '###############'
 ];
-const selectedDifficulty = localStorage.getItem('key-runner-difficulty');
+const storedDifficulty = localStorage.getItem('key-runner-difficulty') || 'easy';
+const unlockedDifficulty = isLevelUnlocked(storedDifficulty) ? storedDifficulty : getHighestUnlockedLevel();
+const selectedDifficulty = isTutorial ? 'tutorial' : unlockedDifficulty;
 const raw = isTutorial ? tutorialLayout : mazeLayouts[selectedDifficulty] || mazeLayouts.normal;
 const fontScales = { small: '0.8', medium: '1', large: '1.6' };
 document.documentElement.style.setProperty('--font-scale', fontScales[localStorage.getItem('key-runner-font-size')] || '1');
@@ -131,15 +204,19 @@ const player = { x: start.x, y: start.y, angle: 0 };
 const difficultySettings = {
     easy: { time: 360, speed: 0.07, missPenalty: 3, words: ['key'] },
     normal: { time: 300, speed: 0.06, missPenalty: 5, words: ['key-runner'] },
-    hard: { time: 180, speed: 0.05, missPenalty: 10, words: ['keyboard', 'labyrinth', 'key-runner'] }
+    hard: { time: 180, speed: 0.05, missPenalty: 10, words: ['keyboard', 'labyrinth', 'key-runner'] },
+    extreme: { time: 150, speed: 0.045, missPenalty: 15, words: ['perception', 'navigation', 'key-runner', 'labyrinth'] }
 };
-const difficulty = isTutorial ? { time: 999, speed: 0.06, missPenalty: 0, words: ['open'] } : difficultySettings[localStorage.getItem('key-runner-difficulty')] || difficultySettings.normal;
+
+const scoreboardStorageKey = 'key-runner-scores';
+const difficulty = isTutorial ? { time: 999, speed: 0.06, missPenalty: 0, words: ['open'] } : difficultySettings[selectedDifficulty] || difficultySettings.normal;
 
 let unlocked = new Set();
 let activeDoor = null;
 let word = '';
 let score = 0;
 let time = difficulty.time;
+let startedAt = 0;
 let ended = false;
 let gameStarted = false;
 let paused = false;
@@ -246,7 +323,7 @@ function buildMaze() {
     doorMeshes = [];
 
     const floorMaterial = material(0x3a6978, 0.62, 0.22);
-    const wallMaterial = material(0xFFFFFF, 0.5, 0.7);
+    const wallMaterial = material(0xe8e0d6, 0.45, 0.35);
     const ceilingMaterial = material(0x0606, 0.9);
 
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, H), floorMaterial);
@@ -266,7 +343,7 @@ function buildMaze() {
                 const wall = new THREE.Mesh(new THREE.BoxGeometry(0.9, 3.7, 0.9), wallMaterial);
                 wall.position.set(x + 0.5, 1.85, y + 0.5);
                 mazeGroup.add(wall);
-                const strip = new THREE.Mesh(new THREE.BoxGeometry(0.025, 3.1, 0.025), new THREE.MeshBasicMaterial({ color: 0x39ddff }));
+                const strip = new THREE.Mesh(new THREE.BoxGeometry(0.025, 3.1, 0.025), new THREE.MeshBasicMaterial({ color: 0x72d8ff }));
                 strip.position.set(x + 0.5, 1.85, y + 0.02);
                 mazeGroup.add(strip);
             }
@@ -405,7 +482,8 @@ function drawMap() {
         for (let x = 0; x < W; x += 1) {
             const item = document.createElement('div');
             const value = grid[y][x];
-            item.className = `cell ${value === '#' ? 'wall' : value === 'L' && !unlocked.has(doorId(x, y)) ? 'lock' : value === 'G' ? 'goal' : ''}`;
+            const visible = Math.abs(Math.floor(player.x) - x) <= 1 && Math.abs(Math.floor(player.y) - y) <= 1;
+            item.className = `cell ${visible ? '' : 'hidden'} ${value === '#' ? 'wall' : value === 'L' && !unlocked.has(doorId(x, y)) ? 'lock' : value === 'G' ? 'goal' : ''}`;
             if (Math.floor(player.x) === x && Math.floor(player.y) === y) {
                 item.className = 'cell player';
                 item.style.setProperty('--heading', `${player.angle}rad`);
@@ -431,13 +509,38 @@ function finish(win) {
     }
     ended = true;
     clearInterval(timer);
+    const clearTime = Math.max(0, difficulty.time - time);
+    const totalScore = clearTime * 5 + score;
     document.getElementById('title').textContent = win ? text.gateBreached : text.timeUpTitle;
     const resultMessage = isTutorial && win ? text.tutorialComplete : win ? text.escaped : text.timeUp;
-    document.getElementById('result').innerHTML = `${resultMessage}<br>${text.score}: <b>${score}</b><div class="result-actions"><a class="button" href="index.html">${text.home}</a><div class="difficulty-actions"><a class="button" href="key-runner.html" data-level="easy">${text.easy}</a><a class="button" href="key-runner.html" data-level="normal">${text.normal}</a><a class="button" href="key-runner.html" data-level="hard">${text.hard}</a></div></div>`;
+    const extremeResult = difficulty === difficultySettings.extreme && win ? `<br>TIME: <b>${clearTime}s</b><br>TOTAL SCORE: <b>${totalScore}</b>` : '';
+    document.getElementById('result').innerHTML = `${resultMessage}<br>${text.score}: <b>${score}</b>${extremeResult}<div class="result-actions"><a class="button" href="index.html">${text.home}</a><div class="difficulty-actions"><a class="button" href="key-runner.html" data-level="easy">${text.easy}</a><a class="button" href="key-runner.html" data-level="normal">${text.normal}</a><a class="button" href="key-runner.html" data-level="hard">${text.hard}</a><a class="button" href="key-runner.html" data-level="extreme">${text.extreme}</a></div></div>`;
     document.getElementById('overlay').classList.add('show');
     document.querySelectorAll('.difficulty-actions a').forEach((link) => {
         link.addEventListener('click', () => localStorage.setItem('key-runner-difficulty', link.dataset.level));
     });
+    if (win) {
+        const currentLevel = isTutorial ? 'tutorial' : selectedDifficulty;
+        if (currentLevel !== 'extreme') {
+            markDifficultyCleared(currentLevel);
+        }
+    }
+    if (difficulty === difficultySettings.extreme && win) saveExtremeScore(clearTime, score, totalScore);
+}
+
+function saveExtremeScore(clearTime, baseScore, totalScore) {
+    const shouldPublish = window.confirm('ランキングに載せますか？');
+    const nickname = shouldPublish ? (window.prompt('ニックネームを入力してください', 'anonymous') || '').trim() || 'anonymous' : 'anonymous';
+
+    const scores = JSON.parse(localStorage.getItem(scoreboardStorageKey) || '[]');
+    scores.push({
+        nickname,
+        user_id: nickname,
+        clear_time: clearTime,
+        score: baseScore,
+        total_score: totalScore
+    });
+    localStorage.setItem(scoreboardStorageKey, JSON.stringify(scores));
 }
 
 function reset() {
@@ -447,6 +550,7 @@ function reset() {
     unlocked = new Set();
     score = 0;
     time = difficulty.time;
+    startedAt = 0;
     ended = false;
     paused = false;
     activeDoor = null;
@@ -575,6 +679,7 @@ const loadingTimer = setInterval(() => {
 
 function launchGame() {
     gameStarted = true;
+    startedAt = performance.now();
     loadingScreen.classList.add('is-complete');
     reset();
 }
