@@ -364,6 +364,8 @@ h1 span {
     display: grid;
 }
 
+.overlay[hidden] { display: none; }
+
 #pause-overlay[hidden] { display: none; }
 .pause-actions { display: grid; gap: 10px; margin-top: 22px; }
 
@@ -400,6 +402,14 @@ h1 span {
     color: #14506a;
     text-decoration: none;
 }
+
+.publish-modal { width: min(440px, 100%); }
+.publish-modal .eyebrow { margin: 0 0 8px; color: var(--red); font: 700 12px / 1.2 'Space Grotesk', sans-serif; letter-spacing: .12em; }
+.publish-modal h2 { margin: 0 0 10px; }
+.publish-modal p { color: var(--muted); line-height: 1.7; }
+.publish-name { display: grid; gap: 7px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+.publish-name input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, .7); color: var(--ink); font: inherit; }
+.publish-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
 
 .difficulty-actions {
     display: grid;

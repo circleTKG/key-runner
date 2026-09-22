@@ -79,6 +79,7 @@ select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; b
 .scoreboard-columns section { min-width: 0; padding: 14px; border: 1px solid rgba(255, 255, 255, .62); border-radius: 10px; background: rgba(255, 255, 255, .24); }
 .scoreboard-columns h3 { margin: 0 0 10px; color: var(--cyan); font: 600 15px 'Space Grotesk', sans-serif; }
 .scoreboard-columns ol { margin: 0; padding-left: 24px; color: var(--muted); line-height: 1.8; }
+.credit-actions { display: grid; gap: 10px; margin-top: 20px; }
 
 @media (max-width: 640px) {
     .account-form, .scoreboard-columns { grid-template-columns: 1fr; }

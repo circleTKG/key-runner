@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rta-leaderboard-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "key-runner",
+      "database_id": "eb6da3d9-5421-47ed-a6b6-7d1f6b2c161d"
+    }
+  ]
+}

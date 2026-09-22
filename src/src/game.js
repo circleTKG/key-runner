@@ -15,6 +15,11 @@ translations.ja.home = 'ホームに戻る';
 translations.ja.extreme = '激むず';
 translations.ja.gateBreached = 'GATE BREACHED';
 translations.ja.timeUpTitle = 'TIME UP';
+translations.ja.publishTitle = 'ランキングに掲載';
+translations.ja.publishDescription = 'この記録をランキングに掲載しますか？';
+translations.ja.nicknameLabel = 'ニックネーム';
+translations.ja.publishAnonymous = '掲載しない';
+translations.ja.publishSubmit = '掲載する';
 translations.en.grid = 'GRID';
 translations.en.pause = 'Pause';
 translations.en.pauseTitle = 'Paused';
@@ -24,6 +29,11 @@ translations.en.home = 'Back to home';
 translations.en.extreme = 'Extreme';
 translations.en.gateBreached = 'GATE BREACHED';
 translations.en.timeUpTitle = 'TIME UP';
+translations.en.publishTitle = 'Publish to ranking';
+translations.en.publishDescription = 'Would you like to publish this run?';
+translations.en.nicknameLabel = 'Nickname';
+translations.en.publishAnonymous = 'Do not publish';
+translations.en.publishSubmit = 'Publish';
 translations.es.grid = 'CUADRICULA';
 translations.es.pause = 'Pausa';
 translations.es.pauseTitle = 'Juego pausado';
@@ -33,6 +43,11 @@ translations.es.home = 'Volver al inicio';
 translations.es.gateBreached = 'PUERTA ABIERTA';
 translations.es.timeUpTitle = 'TIEMPO AGOTADO';
 translations.es.extreme = 'Extremo';
+translations.es.publishTitle = 'Publicar en la tabla';
+translations.es.publishDescription = 'Quieres publicar esta partida?';
+translations.es.nicknameLabel = 'Apodo';
+translations.es.publishAnonymous = 'No publicar';
+translations.es.publishSubmit = 'Publicar';
 const locale = translations[localStorage.getItem('key-runner-locale')] ? localStorage.getItem('key-runner-locale') : 'ja';
 const text = translations[locale];
 const progressionStorageKey = 'key-runner-progress';
@@ -209,6 +224,7 @@ const difficultySettings = {
 };
 
 const scoreboardStorageKey = 'key-runner-scores';
+const leaderboardApiUrl = window.__KEY_RUNNER_API_URL__ || localStorage.getItem('key-runner-api-url') || 'https://rta-leaderboard-api.bvszp558ds.workers.dev';
 const difficulty = isTutorial ? { time: 999, speed: 0.06, missPenalty: 0, words: ['open'] } : difficultySettings[selectedDifficulty] || difficultySettings.normal;
 
 let unlocked = new Set();
@@ -478,11 +494,12 @@ function updateDoorVisuals(now) {
 
 function drawMap() {
     mapElement.innerHTML = '';
+    const limitedVisibility = selectedDifficulty === 'extreme';
     for (let y = 0; y < H; y += 1) {
         for (let x = 0; x < W; x += 1) {
             const item = document.createElement('div');
             const value = grid[y][x];
-            const visible = Math.abs(Math.floor(player.x) - x) <= 1 && Math.abs(Math.floor(player.y) - y) <= 1;
+            const visible = !limitedVisibility || (Math.abs(Math.floor(player.x) - x) <= 1 && Math.abs(Math.floor(player.y) - y) <= 1);
             item.className = `cell ${visible ? '' : 'hidden'} ${value === '#' ? 'wall' : value === 'L' && !unlocked.has(doorId(x, y)) ? 'lock' : value === 'G' ? 'goal' : ''}`;
             if (Math.floor(player.x) === x && Math.floor(player.y) === y) {
                 item.className = 'cell player';
@@ -503,14 +520,21 @@ function updateHud() {
     coordinatesElement.textContent = `X ${player.x.toFixed(1).padStart(4, '0')} / Y ${player.y.toFixed(1).padStart(4, '0')}`;
 }
 
+function formatTime(milliseconds) {
+    const value = Math.max(0, Number(milliseconds) || 0);
+    const minutes = Math.floor(value / 60000);
+    const seconds = Math.floor((value % 60000) / 1000);
+    const centiseconds = Math.floor((value % 1000) / 10);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(centiseconds).padStart(2, '0')}`;
+}
+
 function finish(win) {
     if (ended) {
         return;
     }
     ended = true;
     clearInterval(timer);
-    const clearTime = Math.max(0, difficulty.time - time);
-    const totalScore = clearTime * 5 + score;
+    const clearTime = Math.max(0, Math.round((performance.now() - startedAt) / 10) * 10);
     const currentLevel = isTutorial ? 'tutorial' : selectedDifficulty;
     const nextLevel = currentLevel === 'tutorial'
         ? 'easy'
@@ -524,7 +548,7 @@ function finish(win) {
 
     document.getElementById('title').textContent = win ? text.gateBreached : text.timeUpTitle;
     const resultMessage = isTutorial && win ? text.tutorialComplete : win ? text.escaped : text.timeUp;
-    const extremeResult = difficulty === difficultySettings.extreme && win ? `<br>完走タイム: <b>${clearTime}s</b><br>総合スコア: <b>${totalScore}</b>` : '';
+    const extremeResult = difficulty === difficultySettings.extreme && win ? `<br>完走タイム: <b>${formatTime(clearTime)}</b>` : '';
 
     const actionHtml = [`<a class="button" href="index.html">${text.home}</a>`];
     if (win && nextLevel) {
@@ -544,24 +568,53 @@ function finish(win) {
         }
     }
 
-    if (difficulty === difficultySettings.extreme && win) {
-        saveExtremeScore(clearTime, score, totalScore);
-    }
+    if (difficulty === difficultySettings.extreme && win) openPublishDialog(clearTime, score);
 }
 
-function saveExtremeScore(clearTime, baseScore, totalScore) {
-    const shouldPublish = window.confirm('ランキングに載せますか？');
-    const nickname = shouldPublish ? (window.prompt('ニックネームを入力してください', 'anonymous') || '').trim() || 'anonymous' : 'anonymous';
-
-    const scores = JSON.parse(localStorage.getItem(scoreboardStorageKey) || '[]');
-    scores.push({
+async function saveExtremeScore(clearTime, baseScore, nickname) {
+    const runId = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const entry = {
+        run_id: runId,
         nickname,
         user_id: nickname,
         clear_time: clearTime,
         score: baseScore,
-        total_score: totalScore
-    });
+        total_score: baseScore
+    };
+
+    try {
+        if (leaderboardApiUrl) {
+            const response = await fetch(`${leaderboardApiUrl.replace(/\/$/, '')}/scores`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(entry)
+            });
+            if (!response.ok && response.status !== 409) throw new Error(`leaderboard request failed: ${response.status}`);
+            return;
+        }
+    } catch {
+        // Use the local cache when the API is unavailable.
+    }
+
+    const scores = JSON.parse(localStorage.getItem(scoreboardStorageKey) || '[]');
+    scores.push(entry);
     localStorage.setItem(scoreboardStorageKey, JSON.stringify(scores));
+}
+
+function openPublishDialog(clearTime, baseScore) {
+    const publishOverlay = document.getElementById('publish-overlay');
+    const nicknameInput = document.getElementById('publish-nickname');
+    publishOverlay.hidden = false;
+    publishOverlay.classList.add('show');
+    nicknameInput.focus();
+
+    const close = (nickname) => {
+        publishOverlay.hidden = true;
+        publishOverlay.classList.remove('show');
+        saveExtremeScore(clearTime, baseScore, nickname);
+    };
+    document.getElementById('publish-anonymous').onclick = () => close('anonymous');
+    document.getElementById('publish-submit').onclick = () => close(nicknameInput.value.trim() || 'anonymous');
 }
 
 function reset() {

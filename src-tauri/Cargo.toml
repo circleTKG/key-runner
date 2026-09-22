@@ -1,9 +1,9 @@
 [package]
 name = "Key-Runner"
-version = "0.1.52"
-description = "A Tauri App"
+version = "0.2.0"
+description = "Key-Runner"
 authors = ["circleTKG"]
-license = ""
+license = "MIT License"
 repository = ""
 edition = "2021"
 rust-version = "1.77.2"
