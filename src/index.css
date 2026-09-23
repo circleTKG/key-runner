@@ -80,6 +80,11 @@ select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; b
 .scoreboard-columns h3 { margin: 0 0 10px; color: var(--cyan); font: 600 15px 'Space Grotesk', sans-serif; }
 .scoreboard-columns ol { margin: 0; padding-left: 24px; color: var(--muted); line-height: 1.8; }
 .credit-actions { display: grid; gap: 10px; margin-top: 20px; }
+.credit-project { margin: 4px 0 18px; color: var(--cyan); font: 600 20px 'Space Grotesk', sans-serif; }
+.credit-list { display: grid; gap: 12px; margin: 0; }
+.credit-list > div { display: grid; gap: 3px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .38); }
+.credit-list dt { color: var(--muted); font-size: 12px; letter-spacing: .04em; }
+.credit-list dd { margin: 0; color: var(--ink); line-height: 1.5; }
 
 @media (max-width: 640px) {
     .account-form, .scoreboard-columns { grid-template-columns: 1fr; }

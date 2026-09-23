@@ -89,10 +89,12 @@
             <p class="eyebrow">RANKING</p>
             <h2 data-i18n="publishTitle">ランキングに掲載</h2>
             <p data-i18n="publishDescription">この記録をランキングに掲載しますか？</p>
+            <p data-i18n="nicknameWarning">不適切なニックネームは使用しないでください。</p>
             <label class="publish-name" for="publish-nickname">
                 <span data-i18n="nicknameLabel">ニックネーム</span>
-                <input id="publish-nickname" maxlength="32" value="anonymous" autocomplete="off">
+                <input id="publish-nickname" maxlength="32" autocomplete="off">
             </label>
+            <p class="msg" id="publish-message" aria-live="polite"></p>
             <div class="publish-actions">
                 <button class="button" id="publish-anonymous" type="button" data-i18n="publishAnonymous">掲載しない</button>
                 <button class="button button--primary" id="publish-submit" type="button" data-i18n="publishSubmit">掲載する</button>

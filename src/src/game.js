@@ -18,6 +18,10 @@ translations.ja.timeUpTitle = 'TIME UP';
 translations.ja.publishTitle = 'ランキングに掲載';
 translations.ja.publishDescription = 'この記録をランキングに掲載しますか？';
 translations.ja.nicknameLabel = 'ニックネーム';
+translations.ja.nicknameWarning = '不適切なニックネームは使用しないでください。';
+translations.ja.pendingScoreAdded = '判定APIを利用できないため、審査待ちキューに追加しました。';
+translations.ja.scoreNotSaved = 'サーバーに接続できなかったため、記録を保存できませんでした。';
+translations.ja.nicknameRejected = 'そのニックネームは使用できません。';
 translations.ja.publishAnonymous = '掲載しない';
 translations.ja.publishSubmit = '掲載する';
 translations.en.grid = 'GRID';
@@ -32,6 +36,10 @@ translations.en.timeUpTitle = 'TIME UP';
 translations.en.publishTitle = 'Publish to ranking';
 translations.en.publishDescription = 'Would you like to publish this run?';
 translations.en.nicknameLabel = 'Nickname';
+translations.en.nicknameWarning = 'Please do not use inappropriate nicknames.';
+translations.en.pendingScoreAdded = 'The API was unavailable, so this record was added to the review queue.';
+translations.en.scoreNotSaved = 'The record could not be saved because the server was unavailable.';
+translations.en.nicknameRejected = 'That nickname cannot be used.';
 translations.en.publishAnonymous = 'Do not publish';
 translations.en.publishSubmit = 'Publish';
 translations.es.grid = 'CUADRICULA';
@@ -46,6 +54,10 @@ translations.es.extreme = 'Extremo';
 translations.es.publishTitle = 'Publicar en la tabla';
 translations.es.publishDescription = 'Quieres publicar esta partida?';
 translations.es.nicknameLabel = 'Apodo';
+translations.es.nicknameWarning = 'No utilices apodos inapropiados.';
+translations.es.pendingScoreAdded = 'La API no estaba disponible; el registro se anadio a la cola de revision.';
+translations.es.scoreNotSaved = 'No se pudo guardar el registro porque el servidor no estaba disponible.';
+translations.es.nicknameRejected = 'Ese apodo no se puede utilizar.';
 translations.es.publishAnonymous = 'No publicar';
 translations.es.publishSubmit = 'Publicar';
 const locale = translations[localStorage.getItem('key-runner-locale')] ? localStorage.getItem('key-runner-locale') : 'ja';
@@ -107,7 +119,7 @@ document.title = text.pageTitle;
 const mazeLayouts = {
     easy: [
         '###############',
-        '#S...........G#',
+        '#S............#',
         '#.#####.#####.#',
         '#.....#.#.....#',
         '#####.#.#.#####',
@@ -119,10 +131,27 @@ const mazeLayouts = {
         '#####.#.#.#####',
         '#.....#.#.....#',
         '#.#####.#####.#',
-        '#.............#',
+        '#............G#',
         '###############'
     ],
     normal: [
+        '###############',
+        '#S..#....L....#',
+        '#.#.#.#######.#',
+        '#.#...#...#...#',
+        '#.#####.#.#.###',
+        '#.....#.#.#...#',
+        '#####.#.#.###.#',
+        '#...L.#...#..L#',
+        '#.#####.#####.#',
+        '#.....#.....#.#',
+        '#.###.#####.#.#',
+        '#...#L......#.#',
+        '###.#########.#',
+        '#.L..L.......G#',
+        '###############'
+    ],
+    hard: [
         '###############',
         '#S....#....L..#',
         '#.###.#L#####.#',
@@ -139,23 +168,6 @@ const mazeLayouts = {
         '#.L..........L#',
         '###############'
     ],
-    hard: [
-        '###############',
-        '#S..#....L....#',
-        '#.#.#.#######.#',
-        '#.#...#...#...#',
-        '#.#####.#.#.###',
-        '#.....#.#.#...#',
-        '#####.#.#.###.#',
-        '#...L.#...#...#',
-        '#.#####.#####.#',
-        '#.....#.....#.#',
-        '#.###.#####.#.#',
-        '#...#.......#.#',
-        '###.#########.#',
-        '#.L..........G#',
-        '###############'
-    ],
     extreme: [
         '###############',
         '#S..#....L....#',
@@ -169,7 +181,7 @@ const mazeLayouts = {
         '#.....#.....#.#',
         '#.###.#####.#.#',
         '#...#.......#.#',
-        '###.#########.#',
+        '#######L#####.#',
         '#.L.........G#',
         '###############'
     ]
@@ -217,13 +229,12 @@ const start = findCell('S');
 const goal = findCell('G');
 const player = { x: start.x, y: start.y, angle: 0 };
 const difficultySettings = {
-    easy: { time: 360, speed: 0.07, missPenalty: 3, words: ['key'] },
-    normal: { time: 300, speed: 0.06, missPenalty: 5, words: ['key-runner'] },
-    hard: { time: 180, speed: 0.05, missPenalty: 10, words: ['keyboard', 'labyrinth', 'key-runner'] },
-    extreme: { time: 150, speed: 0.045, missPenalty: 15, words: ['perception', 'navigation', 'key-runner', 'labyrinth'] }
+    easy: { time: 360, speed: 0.07, missPenalty: 3, words: ['apple', 'ball', 'car', 'diary', 'egg', 'fish', 'gate', 'hour', 'interesting', 'live', 'make', 'nice', 'ourselves', 'place', 'rain', 'school', 'ten', 'under', 'view', 'white', 'year'] },
+    normal: { time: 300, speed: 0.06, missPenalty: 5, words: ['apple', 'ball', 'car', 'diary', 'egg', 'fish', 'gate', 'hour', 'interesting', 'live', 'make', 'nice', 'ourselves', 'place', 'rain', 'school', 'ten', 'under', 'view', 'white', 'year'] },
+    hard: { time: 180, speed: 0.05, missPenalty: 10, words: ['apple', 'ball', 'car', 'diary', 'egg', 'fish', 'gate', 'hour', 'interesting', 'live', 'make', 'nice', 'ourselves', 'place', 'rain', 'school', 'ten', 'under', 'view', 'white', 'year'] },
+    extreme: { time: 150, speed: 0.045, missPenalty: 15, words: ['abate', 'banal', 'capricious', 'dichotomy', 'ephemeral', 'fallacious', 'garner', 'hedonism', 'immutable', 'jettison', 'ken', 'laconic', 'neophyte', 'obdurate', 'paradigm', 'quaint', 'sacrosanct', 'taciturn', 'venerate', 'wane', 'xylem', 'yen', 'zephyr'] }
 };
 
-const scoreboardStorageKey = 'key-runner-scores';
 const leaderboardApiUrl = window.__KEY_RUNNER_API_URL__ || localStorage.getItem('key-runner-api-url') || 'https://rta-leaderboard-api.bvszp558ds.workers.dev';
 const difficulty = isTutorial ? { time: 999, speed: 0.06, missPenalty: 0, words: ['open'] } : difficultySettings[selectedDifficulty] || difficultySettings.normal;
 
@@ -528,12 +539,20 @@ function formatTime(milliseconds) {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(centiseconds).padStart(2, '0')}`;
 }
 
+const blockedNicknameTerms = ['fuck', 'shit', 'bitch', 'asshole', 'cunt', 'sex', 'ばか', 'バカ', 'あほ', 'アホ', 'しね', '死ね', 'くたばれ'];
+
+function isNicknameAllowed(nickname) {
+    const normalized = nickname.normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
+    return normalized.length > 0 && !blockedNicknameTerms.some((term) => normalized.includes(term));
+}
+
 function finish(win) {
     if (ended) {
         return;
     }
     ended = true;
     clearInterval(timer);
+    timer = undefined;
     const clearTime = Math.max(0, Math.round((performance.now() - startedAt) / 10) * 10);
     const currentLevel = isTutorial ? 'tutorial' : selectedDifficulty;
     const nextLevel = currentLevel === 'tutorial'
@@ -589,32 +608,42 @@ async function saveExtremeScore(clearTime, baseScore, nickname) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(entry)
             });
+            if (response.status === 400 || response.status === 422) return;
             if (!response.ok && response.status !== 409) throw new Error(`leaderboard request failed: ${response.status}`);
+            const payload = await response.json().catch(() => ({}));
+            if (payload.status === 'pending') messageElement.textContent = text.pendingScoreAdded;
             return;
         }
     } catch {
         // Use the local cache when the API is unavailable.
     }
 
-    const scores = JSON.parse(localStorage.getItem(scoreboardStorageKey) || '[]');
-    scores.push(entry);
-    localStorage.setItem(scoreboardStorageKey, JSON.stringify(scores));
+    messageElement.textContent = text.scoreNotSaved;
 }
 
 function openPublishDialog(clearTime, baseScore) {
     const publishOverlay = document.getElementById('publish-overlay');
     const nicknameInput = document.getElementById('publish-nickname');
+    const nicknameMessage = document.getElementById('publish-message');
     publishOverlay.hidden = false;
     publishOverlay.classList.add('show');
+    nicknameInput.value = '';
+    nicknameMessage.textContent = '';
     nicknameInput.focus();
 
-    const close = (nickname) => {
+    const close = async (nickname) => {
+        const normalizedNickname = nickname.trim() || 'anonymous';
+        if (normalizedNickname !== 'anonymous' && !isNicknameAllowed(normalizedNickname)) {
+            nicknameMessage.textContent = text.nicknameRejected;
+            nicknameInput.focus();
+            return;
+        }
         publishOverlay.hidden = true;
         publishOverlay.classList.remove('show');
-        saveExtremeScore(clearTime, baseScore, nickname);
+        await saveExtremeScore(clearTime, baseScore, normalizedNickname);
     };
     document.getElementById('publish-anonymous').onclick = () => close('anonymous');
-    document.getElementById('publish-submit').onclick = () => close(nicknameInput.value.trim() || 'anonymous');
+    document.getElementById('publish-submit').onclick = () => close(nicknameInput.value);
 }
 
 function reset() {
@@ -624,7 +653,7 @@ function reset() {
     unlocked = new Set();
     score = 0;
     time = difficulty.time;
-    startedAt = 0;
+    startedAt = gameStarted ? performance.now() : 0;
     ended = false;
     paused = false;
     activeDoor = null;
@@ -633,6 +662,9 @@ function reset() {
     input.value = '';
     messageElement.textContent = isTutorial ? text.tutorialIdleMessage : text.idleMessage;
     document.getElementById('overlay').classList.remove('show');
+    const publishOverlay = document.getElementById('publish-overlay');
+    publishOverlay.hidden = true;
+    publishOverlay.classList.remove('show');
     pauseOverlay.hidden = true;
     pauseOverlay.classList.remove('show');
     buildMaze();

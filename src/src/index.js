@@ -26,20 +26,22 @@ translations.es = {
     rulesTitle: 'Reglas',
     settingsTitle: 'Ajustes'
 };
-Object.assign(translations.ja, { difficultyExtreme: '激むず', scoreboardButton: 'スコアを表示', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'スコアデータを管理します。', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'スコアボード', rtaAnyPercent: 'RTA any%', scoreboardExport: 'スコアをエクスポート', scoreboardImport: 'スコアをインポート', scoreboardExported: 'スコアをエクスポートしました。', scoreboardImported: 'スコアをインポートしました。', scoreboardImportError: 'インポートに失敗しました。', anonymous: 'anonymous', scoreboardEmpty: 'まだ記録がありません。' });
-Object.assign(translations.en, { difficultyExtreme: 'Extreme', scoreboardButton: 'View scores', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'Manage score data.', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'Scoreboard', rtaAnyPercent: 'RTA any%', scoreboardExport: 'Export scores', scoreboardImport: 'Import scores', scoreboardExported: 'Scores exported.', scoreboardImported: 'Scores imported.', scoreboardImportError: 'Import failed.', anonymous: 'anonymous', scoreboardEmpty: 'No records yet.' });
-Object.assign(translations.es, { difficultyExtreme: 'Extremo', scoreboardButton: 'Ver puntuaciones', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'Gestionar datos de puntuaciones.', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'Tabla de puntuaciones', rtaAnyPercent: 'RTA any%', scoreboardExport: 'Exportar puntuaciones', scoreboardImport: 'Importar puntuaciones', scoreboardExported: 'Puntuaciones exportadas.', scoreboardImported: 'Puntuaciones importadas.', scoreboardImportError: 'Error al importar.', anonymous: 'anonymous', scoreboardEmpty: 'Aun no hay registros.' });
+Object.assign(translations.ja, { difficultyExtreme: '激むず', scoreboardButton: 'スコアを表示', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'Key-Runnerの制作情報です。', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'スコアボード', scoreboardDescription: '激むずクリア後に掲載を選択できます。', rtaAnyPercent: 'RTA any%', pendingLabel: '審査中', creditProject: 'Key-Runner', creditPlanning: '企画', creditPlanningValue: '高校3年生 チームB', creditTechnology: '使用技術', creditFrontend: 'フロントエンド', creditFrontendValue: 'Rust / Tauri / Three.js', creditBackend: 'バックエンド', creditBackendValue: 'Rust / TypeScript', creditInfrastructure: 'インフラ・データベース', creditInfrastructureValue: 'Cloudflare Workers / D1', creditThanks: 'Special Thanks', creditThanksValue: 'デバッグ協力: 大富豪の方々', scoreboardExport: 'スコアをエクスポート', scoreboardImport: 'スコアをインポート', scoreboardExported: 'スコアをエクスポートしました。', scoreboardImported: 'スコアをインポートしました。', scoreboardImportError: 'インポートに失敗しました。', anonymous: 'anonymous', scoreboardEmpty: 'まだ記録がありません。' });
+Object.assign(translations.en, { difficultyExtreme: 'Extreme', scoreboardButton: 'View scores', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'About the people and technology behind Key-Runner.', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'Scoreboard', scoreboardDescription: 'Choose whether to publish after clearing Extreme.', rtaAnyPercent: 'RTA any%', pendingLabel: 'Under review', creditProject: 'Key-Runner', creditPlanning: 'Planning', creditPlanningValue: 'Grade 12, Team B', creditTechnology: 'Technology', creditFrontend: 'Frontend', creditFrontendValue: 'Rust / Tauri / Three.js', creditBackend: 'Backend', creditBackendValue: 'Rust / TypeScript', creditInfrastructure: 'Infrastructure and database', creditInfrastructureValue: 'Cloudflare Workers / D1', creditThanks: 'Special thanks', creditThanksValue: 'Debug support: the Daifugo team', scoreboardExport: 'Export scores', scoreboardImport: 'Import scores', scoreboardExported: 'Scores exported.', scoreboardImported: 'Scores imported.', scoreboardImportError: 'Import failed.', anonymous: 'anonymous', scoreboardEmpty: 'No records yet.' });
+Object.assign(translations.es, { difficultyExtreme: 'Extremo', scoreboardButton: 'Ver puntuaciones', creditButton: 'Credit', creditTitle: 'Credit', creditDescription: 'Informacion sobre el equipo y la tecnologia de Key-Runner.', scoreboardEyebrow: 'RANKINGS', scoreboardTitle: 'Tabla de puntuaciones', scoreboardDescription: 'Elige si quieres publicar despues de completar Extremo.', rtaAnyPercent: 'RTA any%', pendingLabel: 'En revision', creditProject: 'Key-Runner', creditPlanning: 'Planificacion', creditPlanningValue: 'Ultimo curso, equipo B', creditTechnology: 'Tecnologia', creditFrontend: 'Frontend', creditFrontendValue: 'Rust / Tauri / Three.js', creditBackend: 'Backend', creditBackendValue: 'Rust / TypeScript', creditInfrastructure: 'Infraestructura y base de datos', creditInfrastructureValue: 'Cloudflare Workers / D1', creditThanks: 'Agradecimientos', creditThanksValue: 'Ayuda de depuracion: equipo Daifugo', anonymous: 'anonymous', scoreboardEmpty: 'Aun no hay registros.' });
 
 translations.ja.modeEyebrow = 'CHOOSE YOUR RUN';
 translations.ja.modeTitle = 'プレイを選ぶ';
 translations.en.modeEyebrow = 'CHOOSE YOUR RUN';
 translations.en.modeTitle = 'Choose a run';
+translations.ja.scoreboardReviewNotice = 'スコアの審査には時間がかかることがあります。';
+translations.en.scoreboardReviewNotice = 'Score review may take some time.';
+translations.es.scoreboardReviewNotice = 'La revision de la puntuacion puede tardar un tiempo.';
 
 const language = document.getElementById('language');
 const fontSize = document.getElementById('font-size');
 const modal = document.getElementById('rules-modal');
 const progressStorageKey = 'key-runner-progress';
-const scoreboardStorageKey = 'key-runner-scores';
 const leaderboardApiUrl = window.__KEY_RUNNER_API_URL__ || localStorage.getItem('key-runner-api-url') || 'https://rta-leaderboard-api.bvszp558ds.workers.dev';
 const openButton = document.getElementById('rules-open');
 const closeButton = document.getElementById('rules-close');
@@ -51,14 +53,6 @@ const creditOpen = document.getElementById('credit-open');
 const scoreboardMessage = document.getElementById('scoreboard-message');
 const creditMessage = document.getElementById('credit-message');
 
-function getStoredScores() {
-    try {
-        return JSON.parse(localStorage.getItem('key-runner-scores') || '[]');
-    } catch {
-        return [];
-    }
-}
-
 function renderScoreboard(entries = []) {
     ['rta-any-percent'].forEach((id) => {
         const target = document.getElementById(id);
@@ -66,7 +60,7 @@ function renderScoreboard(entries = []) {
         const sorted = [...entries].sort((a, b) => Number(a.clear_time) - Number(b.clear_time));
         sorted.slice(0, 10).forEach((entry) => {
             const item = document.createElement('li');
-            const label = entry.nickname || entry.user_id || translations[document.documentElement.lang].anonymous;
+            const label = entry.status === 'pending' ? translations[document.documentElement.lang].pendingLabel : entry.nickname || entry.user_id || translations[document.documentElement.lang].anonymous;
             item.textContent = `${label} - ${formatTime(entry.clear_time)}`;
             target.appendChild(item);
         });
@@ -116,65 +110,14 @@ function updateModeButtons() {
     });
 }
 
-function attachScoreboardImportExportHandlers() {
-    const scoreboardImportFile = document.getElementById('scoreboard-import-file');
-    document.getElementById('scoreboard-export').addEventListener('click', exportScoreboard);
-    document.getElementById('scoreboard-import').addEventListener('click', () => scoreboardImportFile.click());
-    scoreboardImportFile.addEventListener('change', (event) => {
-        const file = event.target.files && event.target.files[0];
-        importScoreboard(file);
-        event.target.value = '';
-    });
-}
-
-function exportScoreboard() {
-    const entries = getStoredScores();
-    const json = JSON.stringify(entries, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `key-runner-scores-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-    creditMessage.textContent = translations[document.documentElement.lang].scoreboardExported;
-}
-
-function importScoreboard(file) {
-    if (!file) {
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        try {
-            const parsed = JSON.parse(String(reader.result || '[]'));
-            const imported = Array.isArray(parsed) ? parsed : Array.isArray(parsed.scores) ? parsed.scores : [];
-            const merged = [...getStoredScores(), ...imported];
-            localStorage.setItem(scoreboardStorageKey, JSON.stringify(merged));
-            renderScoreboard(merged);
-            creditMessage.textContent = translations[document.documentElement.lang].scoreboardImported;
-        } catch {
-            creditMessage.textContent = translations[document.documentElement.lang].scoreboardImportError;
-        }
-    };
-    reader.readAsText(file);
-}
-
 async function loadScoreboard() {
-    if (!leaderboardApiUrl) {
-        renderScoreboard(getStoredScores());
-        return;
-    }
     try {
         const response = await fetch(`${leaderboardApiUrl.replace(/\/$/, '')}/scores`, { headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`leaderboard request failed: ${response.status}`);
         const payload = await response.json();
         renderScoreboard(Array.isArray(payload.scores) ? payload.scores : []);
     } catch {
-        renderScoreboard(getStoredScores());
+        renderScoreboard([]);
     }
 }
 
@@ -234,7 +177,6 @@ setFontSize(localStorage.getItem('key-runner-font-size') || 'medium');
 getProgressState();
 if (!localStorage.getItem('key-runner-difficulty')) localStorage.setItem('key-runner-difficulty', 'easy');
 updateModeButtons();
-attachScoreboardImportExportHandlers();
 modeModal.querySelectorAll('[data-level]').forEach((link) => {
     link.addEventListener('click', () => {
         const level = link.dataset.level;

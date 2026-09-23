@@ -13,10 +13,10 @@
             </header>
             <section class="home__actions" aria-label="Game actions">
                 <button class="button button--primary" id="game-start" type="button" data-i18n="start">ゲームスタート</button>
-                <button class="button" id="scoreboard-open" type="button" data-i18n="scoreboardButton">スコアを表示</button>
-                <button class="button" id="credit-open" type="button" data-i18n="creditButton">Credit</button>
+                <button class="button" id="scoreboard-open" type="button" data-i18n="scoreboardButton">ランキングボード</button>
                 <button class="button" id="rules-open" type="button" data-i18n="rulesButton">説明を見る</button>
                 <button class="button" id="settings-open" type="button" data-i18n="settingsButton">設定</button>
+                <button class="button" id="credit-open" type="button" data-i18n="creditButton">Credit</button>
             </section>
         </main>
 
@@ -42,7 +42,8 @@
                 <button class="modal__close" type="button" aria-label="Close" data-i18n-aria-label="close" data-modal-close>×</button>
                 <p class="eyebrow" data-i18n="scoreboardEyebrow">RANKINGS</p>
                 <h2 id="scoreboard-title" data-i18n="scoreboardTitle">スコアボード</h2>
-                <p class="scoreboard-message" id="scoreboard-message" aria-live="polite">ランキング掲載は激むずクリア時に選択できます。</p>
+                <p class="scoreboard-message" id="scoreboard-message" aria-live="polite" data-i18n="scoreboardDescription">激むずクリア後に掲載を選択できます。</p>
+                <p class="scoreboard-message" data-i18n="scoreboardReviewNotice">スコアの審査には時間がかかることがあります。</p>
                 <div class="scoreboard-columns">
                     <section><h3 data-i18n="rtaAnyPercent">RTA any%</h3><ol id="rta-any-percent"></ol></section>
                 </div>
@@ -53,14 +54,17 @@
             <div class="modal__backdrop" data-modal-close></div>
             <section class="modal__panel">
                 <button class="modal__close" type="button" aria-label="Close" data-i18n-aria-label="close" data-modal-close>×</button>
-                <p class="eyebrow">CREDIT</p>
+                <p class="eyebrow" data-i18n="creditTitle">CREDIT</p>
                 <h2 id="credit-title" data-i18n="creditTitle">Credit</h2>
-                <p data-i18n="creditDescription">スコアデータを管理します。</p>
-                <div class="credit-actions">
-                    <button class="button" id="scoreboard-export" type="button" data-i18n="scoreboardExport">スコアをエクスポート</button>
-                    <button class="button" id="scoreboard-import" type="button" data-i18n="scoreboardImport">スコアをインポート</button>
-                    <input id="scoreboard-import-file" type="file" accept="application/json" hidden>
-                </div>
+                <p class="credit-project" data-i18n="creditProject">Key-Runner</p>
+                <dl class="credit-list">
+                    <div><dt data-i18n="creditPlanning">企画</dt><dd data-i18n="creditPlanningValue">3 Bチーム</dd></div>
+                    <div><dt data-i18n="creditTechnology">使用技術</dt><dd></dd></div>
+                    <div><dt data-i18n="creditFrontend">フロントエンド</dt><dd data-i18n="creditFrontendValue">Rust / Tauri / Three.js</dd></div>
+                    <div><dt data-i18n="creditBackend">バックエンド</dt><dd data-i18n="creditBackendValue">Rust / TypeScript</dd></div>
+                    <div><dt data-i18n="creditInfrastructure">インフラ・データベース</dt><dd data-i18n="creditInfrastructureValue">Cloudflare Workers / D1</dd></div>
+                    <div><dt data-i18n="creditThanks">Special Thanks</dt><dd data-i18n="creditThanksValue">デバッグ協力: 大富豪の方々</dd></div>
+                </dl>
                 <p class="scoreboard-message" id="credit-message" aria-live="polite"></p>
             </section>
         </div>

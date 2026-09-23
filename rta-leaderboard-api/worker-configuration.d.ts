@@ -3,6 +3,7 @@
 // Runtime types generated with workerd@1.20260921.1 2026-09-21
 interface __BaseEnv_Env {
 	DB: D1Database;
+    OPENAI_API_KEY: string;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
