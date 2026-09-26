@@ -131,4 +131,80 @@ const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
 			expect(JSON.stringify(body)).not.toContain("test-key");
 			moderationFetch.mockRestore();
 		});
+
+		it("requires admin authentication to list and update scores", async () => {
+			const adminEnv = env as typeof env & { ADMIN_PASSWORD?: string };
+			adminEnv.ADMIN_PASSWORD = "admin-test-secret";
+			const runId = "admin-review-test";
+			await env.DB.prepare("INSERT INTO scores (run_id, nickname, clear_time, score, total_score, status) VALUES (?, ?, ?, ?, ?, 'pending')")
+				.bind(runId, "review-player", 1234, 500, 1500)
+				.run();
+			await env.DB.prepare("INSERT INTO scores (run_id, nickname, clear_time, score, total_score, status) VALUES (?, ?, ?, ?, ?, 'pending')")
+				.bind("admin-review-batch-test", "batch-player", 2345, 600, 1600)
+				.run();
+
+			const fetchWorker = async (request: Request) => {
+				const ctx = createExecutionContext();
+				const response = await worker.fetch(request, env, ctx);
+				await waitOnExecutionContext(ctx);
+				return response;
+			};
+
+			try {
+				const unauthorized = await fetchWorker(new IncomingRequest("http://example.com/admin/scores"));
+				expect(unauthorized.status).toBe(401);
+
+				const wrongPassword = await fetchWorker(new IncomingRequest("http://example.com/admin/login", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password: "incorrect" }),
+				}));
+				expect(wrongPassword.status).toBe(401);
+
+				const login = await fetchWorker(new IncomingRequest("http://example.com/admin/login", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password: "admin-test-secret" }),
+				}));
+				expect(login.status).toBe(200);
+				const { token } = await login.json() as { token: string };
+
+				const list = await fetchWorker(new IncomingRequest("http://example.com/admin/scores", {
+					headers: { Authorization: `Bearer ${token}` },
+				}));
+				expect(list.status).toBe(200);
+				const scores = (await list.json() as { scores: Array<{ id: number; run_id: string; status: string }> }).scores;
+				const pendingScore = scores.find((score) => score.run_id === runId);
+				expect(pendingScore?.status).toBe("pending");
+				expect(pendingScore).toBeDefined();
+
+				const batchScore = scores.find((score) => score.run_id === "admin-review-batch-test");
+				expect(batchScore?.status).toBe("pending");
+				const update = await fetchWorker(new IncomingRequest("http://example.com/admin/scores", {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+					body: JSON.stringify({ updates: [
+						{ id: pendingScore!.id, status: "approved" },
+						{ id: batchScore!.id, status: "rejected" },
+					] }),
+				}));
+				expect(update.status).toBe(200);
+				expect(await update.json()).toEqual({
+					updated: 2,
+					updates: [
+						{ id: pendingScore!.id, status: "approved" },
+						{ id: batchScore!.id, status: "rejected" },
+					],
+				});
+
+				const invalidUpdate = await fetchWorker(new IncomingRequest("http://example.com/admin/scores", {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+					body: JSON.stringify({ updates: [{ id: pendingScore!.id, status: "pending" }] }),
+				}));
+				expect(invalidUpdate.status).toBe(400);
+			} finally {
+				delete adminEnv.ADMIN_PASSWORD;
+			}
+		});
 	});

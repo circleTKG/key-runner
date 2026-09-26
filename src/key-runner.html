@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style/game.css">
     <link rel="stylesheet" href="style/layout.css">
     <link rel="stylesheet" href="style/interaction.css">
+    <link rel="stylesheet" href="style/cursor.css">
 </head>
 <body>
     <main class="game">
@@ -57,6 +58,7 @@
             <div class="pause-actions">
                 <button class="button" id="resume" type="button" data-i18n="resume">続ける</button>
                 <button class="button" id="pause-restart" type="button" data-i18n="retry">やり直す</button>
+                <button class="button" id="rules-open" type="button" data-i18n="rulesButton">説明を見る</button>
                 <a class="button" href="index.html" data-i18n="home">ホームに戻る</a>
             </div>
         </div>
@@ -100,6 +102,22 @@
                 <button class="button button--primary" id="publish-submit" type="button" data-i18n="publishSubmit">掲載する</button>
             </div>
         </div>
+    </div>
+    <div class="overlay rules-overlay" id="rules-modal" hidden>
+        <section class="modal rules-panel" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+            <button class="modal__close" id="rules-close" type="button" aria-label="Close" data-i18n-aria-label="close">×</button>
+            <p class="eyebrow" data-i18n="rulesEyebrow">HOW TO PLAY</p>
+            <h2 id="rules-title" data-i18n="rulesTitle">遊び方</h2>
+            <p data-i18n="rulesDescription">迷路を進み、赤い扉を開けて、光るゲートを目指しましょう。</p>
+            <ol class="rules-steps">
+                <li><b data-i18n="ruleMoveTitle">移動と向き</b><span data-i18n="ruleMove">W / ↑ で前進、A / ← で左を向き、D / → で右を向きます。A・D はその場で向きを変える操作です。後退キーはありません。</span></li>
+                <li><b data-i18n="ruleDoorTitle">扉を開ける</b><span data-i18n="ruleDoors">赤い扉に近づくと単語と入力欄が表示され、入力欄にカーソルが移ります。単語を入力して Enter を押してください。大文字・小文字は区別されません。</span></li>
+                <li><b data-i18n="ruleMistakeTitle">入力を間違えたら</b><span data-i18n="ruleMistake">不正解でも入力し直せますが、難易度に応じて残り時間が減ります。チュートリアルでは時間のペナルティはありません。</span></li>
+                <li><b data-i18n="ruleMapTitle">マップと表示</b><span data-i18n="ruleMap">マップの矢印は自分の位置と向き、赤いマスは未解除の扉、ゴールのマスは脱出地点です。激むずでは周囲だけが表示されます。残り時間とスコアは画面上部で確認できます。</span></li>
+                <li><b data-i18n="ruleScoreTitle">スコアを獲得する</b><span data-i18n="ruleScore">単語を正解すると扉が開き、スコアが250加算されます。すべての扉を開ける必要はありません。</span></li>
+                <li><b data-i18n="ruleGoalTitle">ゴールを目指す</b><span data-i18n="ruleGoal">残り時間がなくなる前に、迷路の奥にある光る脱出ゲートへ到達するとクリアです。</span></li>
+            </ol>
+        </section>
     </div>
 
     <script type="module" src="src/game.js"></script>

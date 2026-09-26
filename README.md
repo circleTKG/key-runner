@@ -63,8 +63,11 @@ Before deploying, configure the D1 database described in [`rta-leaderboard-api/w
 ```bash
 npx wrangler d1 migrations apply key-runner --remote
 npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put ADMIN_PASSWORD
 npm run deploy
 ```
+
+`ADMIN_PASSWORD` is required for the hidden score-review screen. In the home screen, click the version at the bottom five times to open the login form. The password is kept as a Cloudflare Worker secret; after login, a signed session token expires after four hours.
 
 The Worker exposes these endpoints:
 
@@ -72,6 +75,9 @@ The Worker exposes these endpoints:
 - `GET /scores`: returns approved and pending scores.
 - `POST /scores`: accepts a new score and places it in the pending state.
 - `POST /moderate`: checks whether a nickname is suitable for publication.
+- `POST /admin/login`: exchanges the admin password for a four-hour session token.
+- `GET /admin/scores`: returns all score records with admin authentication.
+- `PATCH /admin/scores`: applies 1 to 100 score status changes in one request. The review screen stages changes locally until Apply is selected.
 
 The desktop client uses the deployed API URL defined in [`src/src/index.js`](src/src/index.js). For a local or alternate API, set `window.__KEY_RUNNER_API_URL__` before the application scripts run, or set the `key-runner-api-url` value in `localStorage`.
 

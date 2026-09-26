@@ -368,6 +368,17 @@ h1 span {
 
 #pause-overlay[hidden] { display: none; }
 .pause-actions { display: grid; gap: 10px; margin-top: 22px; }
+.rules-overlay { z-index: 12; padding: 24px; }
+section.modal.rules-panel { position: relative; width: min(800px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; padding: clamp(28px, 7vw, 44px); border: 1px solid rgba(255, 255, 255, .72); border-radius: 20px; background: rgba(255, 255, 255, .62); box-shadow: 0 24px 70px rgba(20, 35, 51, .2), inset 0 1px 0 rgba(255, 255, 255, .8); backdrop-filter: blur(28px) saturate(130%); text-align: left; }
+section.modal.rules-panel::-webkit-scrollbar { display: none; }
+section.modal.rules-panel h2 { margin: 8px 0 14px; color: var(--cyan); font-family: inherit; font-size: 32px; text-align: left; }
+.rules-panel .eyebrow { color: var(--red); font: 700 12px / 1.2 'Space Grotesk', sans-serif; }
+.rules-panel > p { line-height: 1.8; }
+.rules-steps { display: grid; gap: 14px; margin: 22px 0 0; padding: 0; list-style: none; counter-reset: rules; }
+.rules-steps li { position: relative; display: grid; gap: 3px; padding: 13px 15px 13px 45px; border: 1px solid rgba(255, 255, 255, .62); border-radius: 10px; background: rgba(255, 255, 255, .24); counter-increment: rules; }
+.rules-steps li::before { content: counter(rules); position: absolute; top: 13px; left: 15px; color: var(--red); font: 700 18px 'Space Grotesk', sans-serif; }
+.rules-steps b { color: var(--ink); }
+.rules-steps span { color: var(--muted); line-height: 1.8; }
 
 .modal {
     width: min(430px, 90%);
@@ -446,3 +457,5 @@ h1 span {
 }
 
 .topbar img { width: 200%; max-width: 300px; }
+
+.modal__close { position: absolute; top: 12px; right: 14px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .35); color: var(--muted); font-size: 28px; line-height: 1; cursor: pointer; }

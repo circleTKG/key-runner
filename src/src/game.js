@@ -1,5 +1,8 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
 import { createKeyboardState } from './controls.js';
+import { initializeCustomCursor } from './cursor.js';
+
+initializeCustomCursor();
 
 const translations = {
     ja: { pageTitle: 'Key-Runner', time: 'TIME', score: 'SCORE', liveExploration: 'LIVE EXPLORATION', threeError: 'Three.jsの読み込みに失敗しました。', tacticalMap: 'TACTICAL MAP', legendPlayer: '▲ 自分の向き', legendGoal: '● ゴール', mapHelp: '矢印が現在の視線方向。迷宮の奥にある脱出ゲートへ向かおう。', restart: 'リスタート', explorePrompt: '探索して、赤いタイピング扉を探そう。', inputPlaceholder: '扉の前で単語を入力してEnter', initialMessage: '扉から遠ざかることもできます。', loading: 'LOADING KEY-RUNNER', launch: 'ゲームを始める', again: 'もう一度', tutorialPrompt: 'チュートリアル：WASDで右へ進み、赤い扉を目指そう。', doorPrompt: '単語を入力して扉を開けよう。', tutorialDoorPrompt: 'チュートリアル：表示された単語を入力して扉を開けよう。', idleMessage: 'WASDで探索開始。', tutorialIdleMessage: 'WADで右へ進もう。', notNearDoor: '扉の近くにいません。', correct: '正解！扉が開いた。', incorrect: '不正解。', seconds: '秒減少。', tutorialComplete: 'チュートリアル完了！', escaped: '脱出成功！', timeUp: '時間切れ。', home: 'ホームへ戻る', easy: '簡単', normal: '普通', hard: '難しい' },
@@ -60,6 +63,36 @@ translations.es.scoreNotSaved = 'No se pudo guardar el registro porque el servid
 translations.es.nicknameRejected = 'Ese apodo no se puede utilizar.';
 translations.es.publishAnonymous = 'No publicar';
 translations.es.publishSubmit = 'Publicar';
+Object.assign(translations.ja, {
+    rulesButton: '説明を見る', close: '閉じる', rulesEyebrow: 'HOW TO PLAY', rulesTitle: '遊び方',
+    rulesDescription: '操作、扉の開け方、スコアとマップの見方を確認できます。',
+    ruleMoveTitle: '移動と向き', ruleMove: 'W / ↑ で前進、A / ← で左を向き、D / → で右を向きます。A・D はその場で向きを変える操作です。後退キーはありません。',
+    ruleDoorTitle: '扉を開ける', ruleDoors: '赤い扉に近づくと単語と入力欄が表示され、入力欄にカーソルが移ります。単語を入力して Enter を押してください。大文字・小文字は区別されません。',
+    ruleMistakeTitle: '入力を間違えたら', ruleMistake: '不正解でも入力し直せますが、難易度に応じて残り時間が減ります。チュートリアルでは時間のペナルティはありません。',
+    ruleMapTitle: 'マップと表示', ruleMap: 'マップの矢印は自分の位置と向き、赤いマスは未解除の扉、ゴールのマスは脱出地点です。激むずでは周囲だけが表示されます。残り時間とスコアは画面上部で確認できます。',
+    ruleScoreTitle: 'スコアを獲得する', ruleScore: '単語を正解すると扉が開き、スコアが250加算されます。すべての扉を開ける必要はありません。',
+    ruleGoalTitle: 'ゴールを目指す', ruleGoal: '残り時間がなくなる前に、迷路の奥にある光る脱出ゲートへ到達するとクリアです。'
+});
+Object.assign(translations.en, {
+    rulesButton: 'How to play', close: 'Close', rulesEyebrow: 'HOW TO PLAY', rulesTitle: 'How to play',
+    rulesDescription: 'Review movement, door typing, scoring, and the map.',
+    ruleMoveTitle: 'Movement and facing', ruleMove: 'Press W / ↑ to move forward, A / ← to turn left, and D / → to turn right. A and D turn you in place; there is no reverse key.',
+    ruleDoorTitle: 'Open doors', ruleDoors: 'When you get close to a red door, its word and an input field appear, and the field receives focus. Type the word and press Enter. Letter case does not matter.',
+    ruleMistakeTitle: 'If your answer is wrong', ruleMistake: 'You can try again, but a wrong answer costs time based on the difficulty. Wrong answers do not cost time in the tutorial.',
+    ruleMapTitle: 'Map and HUD', ruleMap: 'The arrow shows your position and facing direction, red cells are locked doors, and the goal cell marks the exit. Extreme shows only nearby cells. Check your time and score at the top of the screen.',
+    ruleScoreTitle: 'Earn score', ruleScore: 'A correct word opens the door and adds 250 points. You do not need to open every door.',
+    ruleGoalTitle: 'Reach the goal', ruleGoal: 'Reach the glowing escape gate deep in the maze before time runs out.'
+});
+Object.assign(translations.es, {
+    rulesButton: 'Como jugar', close: 'Cerrar', rulesEyebrow: 'COMO JUGAR', rulesTitle: 'Como jugar',
+    rulesDescription: 'Consulta el movimiento, la escritura en puertas, la puntuacion y el mapa.',
+    ruleMoveTitle: 'Movimiento y orientacion', ruleMove: 'Pulsa W / ↑ para avanzar, A / ← para girar a la izquierda y D / → para girar a la derecha. A y D giran en el sitio; no hay tecla para retroceder.',
+    ruleDoorTitle: 'Abrir puertas', ruleDoors: 'Al acercarte a una puerta roja aparece una palabra y un campo que recibe el foco. Escribe la palabra y pulsa Enter. No se distinguen mayusculas y minusculas.',
+    ruleMistakeTitle: 'Si te equivocas', ruleMistake: 'Puedes intentarlo de nuevo, pero una respuesta incorrecta resta tiempo segun la dificultad. En el tutorial no se pierde tiempo por errores.',
+    ruleMapTitle: 'Mapa e indicadores', ruleMap: 'La flecha muestra tu posicion y orientacion; las casillas rojas son puertas cerradas y la casilla de meta marca la salida. En Extremo solo se muestran las casillas cercanas. Consulta el tiempo y la puntuacion en la parte superior.',
+    ruleScoreTitle: 'Ganar puntos', ruleScore: 'Cada palabra correcta abre la puerta y suma 250 puntos. No hace falta abrir todas las puertas.',
+    ruleGoalTitle: 'Llegar a la meta', ruleGoal: 'Llega a la salida iluminada al fondo del laberinto antes de que se agote el tiempo.'
+});
 const locale = translations[localStorage.getItem('key-runner-locale')] ? localStorage.getItem('key-runner-locale') : 'ja';
 const text = translations[locale];
 const progressionStorageKey = 'key-runner-progress';
@@ -273,6 +306,9 @@ const pauseOverlay = document.getElementById('pause-overlay');
 const pauseButton = document.getElementById('pause');
 const resumeButton = document.getElementById('resume');
 const pauseRestartButton = document.getElementById('pause-restart');
+const rulesModal = document.getElementById('rules-modal');
+const rulesOpenButton = document.getElementById('rules-open');
+const rulesCloseButton = document.getElementById('rules-close');
 
 document.querySelectorAll('[data-i18n]').forEach((element) => {
     element.textContent = text[element.dataset.i18n];
@@ -740,6 +776,23 @@ function setPaused(value) {
 pauseButton.onclick = () => setPaused(true);
 resumeButton.onclick = () => setPaused(false);
 pauseRestartButton.onclick = () => { setPaused(false); reset(); };
+rulesOpenButton.onclick = () => {
+    rulesModal.hidden = false;
+    rulesModal.classList.add('show');
+    rulesCloseButton.focus();
+};
+function closeRules() {
+    rulesModal.hidden = true;
+    rulesModal.classList.remove('show');
+    rulesOpenButton.focus();
+}
+rulesCloseButton.onclick = closeRules;
+rulesModal.addEventListener('click', (event) => {
+    if (event.target === rulesModal) closeRules();
+});
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !rulesModal.hidden) closeRules();
+});
 document.getElementById('again').onclick = reset;
 window.addEventListener('resize', resize);
 

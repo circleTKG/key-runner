@@ -1,0 +1,51 @@
+body.custom-cursor-active,
+body.custom-cursor-active * {
+    cursor: none !important;
+}
+
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483647;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    visibility: hidden;
+    will-change: transform;
+}
+
+.custom-cursor.is-visible { visibility: visible; }
+
+.custom-cursor__halo {
+    position: absolute;
+    z-index: 0;
+    inset: -6px;
+    border-radius: 50%;
+    background: rgba(214, 61, 97, .48);
+    opacity: 0;
+    transform: scale(.55);
+    transition: opacity .16s ease, transform .16s ease, background-color .16s ease;
+}
+
+.custom-cursor img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.custom-cursor.is-hovering .custom-cursor__halo,
+.custom-cursor.is-focused .custom-cursor__halo {
+    opacity: .82;
+    transform: scale(1);
+}
+
+.custom-cursor.is-focused .custom-cursor__halo { background: rgba(8, 126, 154, .55); }
+.custom-cursor.is-pressed .custom-cursor__halo { opacity: 1; transform: scale(1.16); }
+
+@media (prefers-reduced-motion: reduce) {
+    .custom-cursor__halo { transition: none; }
+}
