@@ -30,6 +30,9 @@ translations.es = {
     rulesTitle: 'Reglas',
     settingsTitle: 'Ajustes'
 };
+Object.assign(translations.ja, { advancedSettingsEyebrow: 'LOCAL PREFERENCES', advancedSettingsTitle: '表示・投稿設定', showStartButton: 'ゲームスタートを表示', showScoreboardButton: 'スコアボードを表示', showRulesButton: '説明を見るを表示', showSettingsButton: '設定を表示', showCreditButton: 'Creditを表示', submitScores: 'スコアをランキングに送信', showScoreboardQr: 'スコアボードのQRコードを表示', adminLoginButton: '管理者ログイン' });
+Object.assign(translations.en, { advancedSettingsEyebrow: 'LOCAL PREFERENCES', advancedSettingsTitle: 'Display and submission settings', showStartButton: 'Show Start game', showScoreboardButton: 'Show Scoreboard', showRulesButton: 'Show How to play', showSettingsButton: 'Show Settings', showCreditButton: 'Show Credit', submitScores: 'Submit scores to leaderboard', showScoreboardQr: 'Show scoreboard QR code', adminLoginButton: 'Administrator login' });
+Object.assign(translations.es, { advancedSettingsEyebrow: 'PREFERENCIAS LOCALES', advancedSettingsTitle: 'Mostrar y publicar', showStartButton: 'Mostrar Iniciar partida', showScoreboardButton: 'Mostrar puntuaciones', showRulesButton: 'Mostrar Como jugar', showSettingsButton: 'Mostrar Ajustes', showCreditButton: 'Mostrar Credit', submitScores: 'Enviar puntuaciones a la tabla', showScoreboardQr: 'Mostrar el codigo QR', adminLoginButton: 'Inicio de sesion de administrador' });
 Object.assign(translations.ja, {
     rulesEyebrow: 'HOW TO PLAY',
     rulesTitle: '遊び方',
@@ -116,6 +119,8 @@ const language = document.getElementById('language');
 const fontSize = document.getElementById('font-size');
 const modal = document.getElementById('rules-modal');
 const progressStorageKey = 'key-runner-progress';
+const preferencesStorageKey = 'key-runner-ui-preferences';
+const defaultPreferences = { 'game-start': true, 'scoreboard-open': true, 'rules-open': true, 'settings-open': true, 'credit-open': true, 'submit-scores': true, 'scoreboard-qr': true };
 const leaderboardApiUrl = window.__KEY_RUNNER_API_URL__ || localStorage.getItem('key-runner-api-url') || 'https://rta-leaderboard-api.bvszp558ds.workers.dev';
 const openButton = document.getElementById('rules-open');
 const closeButton = document.getElementById('rules-close');
@@ -139,6 +144,28 @@ let adminSessionToken = '';
 let adminScores = [];
 let pendingAdminChanges = new Map();
 let isApplyingAdminChanges = false;
+
+function getPreferences() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(preferencesStorageKey) || 'null');
+        return { ...defaultPreferences, ...(stored && typeof stored === 'object' ? stored : {}) };
+    } catch {
+        return { ...defaultPreferences };
+    }
+}
+
+function applyPreferences(preferences = getPreferences()) {
+    document.querySelectorAll('[data-preference]').forEach((input) => {
+        const key = input.dataset.preference;
+        input.checked = Boolean(preferences[key]);
+        if (key === 'scoreboard-qr') {
+            document.querySelector('[data-scoreboard-qr]').hidden = !input.checked;
+        } else if (key !== 'submit-scores') {
+            const button = document.querySelector(`[data-home-control="${key}"]`);
+            if (button) button.hidden = !input.checked;
+        }
+    });
+}
 
 function renderScoreboard(entries = []) {
     ['rta-any-percent'].forEach((id) => {
@@ -354,7 +381,7 @@ function setModal(open, modalId = 'rules-modal') {
     if (open) {
         document.getElementById(modalId).querySelector('button[data-modal-close]')?.focus();
     } else {
-        const triggerId = modalId === 'mode-modal' ? 'game-start' : modalId.startsWith('admin') ? 'admin-version' : `${modalId.replace('-modal', '')}-open`;
+        const triggerId = modalId === 'mode-modal' ? 'game-start' : modalId === 'advanced-settings-modal' || modalId.startsWith('admin') ? 'admin-version' : `${modalId.replace('-modal', '')}-open`;
         document.getElementById(triggerId)?.focus();
     }
 }
@@ -369,9 +396,12 @@ adminVersion.addEventListener('click', () => {
     adminClickCount += 1;
     if (adminClickCount === 5) {
         adminClickCount = 0;
-        adminLoginMessage.textContent = '';
-        setModal(true, 'admin-login-modal');
+        setModal(true, 'advanced-settings-modal');
     }
+});
+document.getElementById('open-admin-login').addEventListener('click', () => {
+    adminLoginMessage.textContent = '';
+    setModal(true, 'admin-login-modal');
 });
 adminLoginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -405,6 +435,14 @@ creditOpen.addEventListener('click', () => setModal(true, 'credit-modal'));
 openButton.addEventListener('click', () => setModal(true));
 closeButton.addEventListener('click', () => setModal(false, 'rules-modal'));
 document.getElementById('settings-open').addEventListener('click', () => setModal(true, 'settings-modal'));
+document.querySelectorAll('[data-preference]').forEach((input) => {
+    input.addEventListener('change', () => {
+        const preferences = getPreferences();
+        preferences[input.dataset.preference] = input.checked;
+        localStorage.setItem(preferencesStorageKey, JSON.stringify(preferences));
+        applyPreferences(preferences);
+    });
+});
 modals.forEach((item) => item.querySelectorAll('[data-modal-close]').forEach((button) => button.addEventListener('click', () => setModal(false, item.id))));
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -418,6 +456,7 @@ setFontSize(localStorage.getItem('key-runner-font-size') || 'medium');
 getProgressState();
 if (!localStorage.getItem('key-runner-difficulty')) localStorage.setItem('key-runner-difficulty', 'easy');
 updateModeButtons();
+applyPreferences();
 modeModal.querySelectorAll('[data-level]').forEach((link) => {
     link.addEventListener('click', () => {
         const level = link.dataset.level;

@@ -623,7 +623,16 @@ function finish(win) {
         }
     }
 
-    if (difficulty === difficultySettings.extreme && win) openPublishDialog(clearTime, score);
+    if (difficulty === difficultySettings.extreme && win && getScoreSubmissionPreference()) openPublishDialog(clearTime, score);
+}
+
+function getScoreSubmissionPreference() {
+    try {
+        const preferences = JSON.parse(localStorage.getItem('key-runner-ui-preferences') || 'null');
+        return preferences?.['submit-scores'] !== false;
+    } catch {
+        return true;
+    }
 }
 
 async function saveExtremeScore(clearTime, baseScore, nickname) {
