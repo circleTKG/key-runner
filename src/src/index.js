@@ -120,7 +120,7 @@ const fontSize = document.getElementById('font-size');
 const modal = document.getElementById('rules-modal');
 const progressStorageKey = 'key-runner-progress';
 const preferencesStorageKey = 'key-runner-ui-preferences';
-const defaultPreferences = { 'game-start': true, 'scoreboard-open': true, 'rules-open': true, 'settings-open': true, 'credit-open': true, 'submit-scores': true, 'scoreboard-qr': true };
+const defaultPreferences = { 'game-start': true, 'scoreboard-open': true, 'rules-open': true, 'settings-open': true, 'credit-open': true, 'submit-scores': true, 'scoreboard-qr': false };
 const leaderboardApiUrl = window.__KEY_RUNNER_API_URL__ || localStorage.getItem('key-runner-api-url') || 'https://rta-leaderboard-api.bvszp558ds.workers.dev';
 const openButton = document.getElementById('rules-open');
 const closeButton = document.getElementById('rules-close');
@@ -172,7 +172,7 @@ function renderScoreboard(entries = []) {
         const target = document.getElementById(id);
         target.innerHTML = '';
         const sorted = [...entries].sort((a, b) => Number(a.clear_time) - Number(b.clear_time));
-        sorted.slice(0, 10).forEach((entry) => {
+        sorted.forEach((entry) => {
             const item = document.createElement('li');
             const label = entry.status === 'pending' ? translations[document.documentElement.lang].pendingLabel : entry.nickname || entry.user_id || translations[document.documentElement.lang].anonymous;
             item.textContent = `${label} - ${formatTime(entry.clear_time)}`;

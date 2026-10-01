@@ -257,7 +257,7 @@ function validatePayload(payload: unknown): ScorePayload | null {
 
 async function getScores(env: Env): Promise<Response> {
 	const result = await env.DB.prepare(
-		"SELECT CASE WHEN status = 'approved' THEN nickname ELSE NULL END AS nickname, clear_time, score, total_score, status, created_at FROM scores WHERE status IN ('approved', 'pending') ORDER BY clear_time ASC, created_at ASC LIMIT 100",
+		"SELECT CASE WHEN status = 'approved' THEN nickname ELSE NULL END AS nickname, clear_time, score, total_score, status, created_at FROM scores WHERE status IN ('approved', 'pending') ORDER BY clear_time ASC, created_at ASC",
 	).all();
 	return json({ scores: result.results });
 }

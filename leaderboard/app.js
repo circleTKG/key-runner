@@ -16,8 +16,7 @@ function formatTime(milliseconds) {
 function renderScores(entries) {
   const sorted = entries
     .filter((entry) => Number.isFinite(Number(entry.clear_time)))
-    .sort((left, right) => Number(left.clear_time) - Number(right.clear_time))
-    .slice(0, 100);
+    .sort((left, right) => Number(left.clear_time) - Number(right.clear_time));
   scoreList.replaceChildren();
   bestTime.textContent = sorted.length ? formatTime(sorted[0].clear_time) : '--:--:--';
 
